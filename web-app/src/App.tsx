@@ -7,7 +7,7 @@ function App() {
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-svh">
-        <Button>Click me</Button>
+        <Button>Click me123</Button>
       </div>
     </>
   );
