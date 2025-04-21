@@ -1,6 +1,7 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+cd backend
 # Chạy Prettier để định dạng mã
 pnpm run format
 
