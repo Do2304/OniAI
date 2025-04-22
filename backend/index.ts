@@ -1,6 +1,7 @@
 import express, { Express } from 'express'
 import dotenv from 'dotenv'
 import main from './routes/indexRoutes'
+import { getUsers } from "../controller/userController";
 
 dotenv.config()
 const app: Express = express()
@@ -11,5 +12,4 @@ main(app)
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`)
-  console.log(b)
 })
