@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-svh">
-        <Button>Click me1234591012</Button>
+        <Button>Click me</Button>
       </div>
     </>
   );
