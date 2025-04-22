@@ -1,7 +1,6 @@
 import express, { Express } from 'express'
 import dotenv from 'dotenv'
 import main from './routes/indexRoutes'
-import { getUsers } from "../controller/userController";
 
 dotenv.config()
 const app: Express = express()
