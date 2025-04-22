@@ -34,11 +34,19 @@
     "typescript-eslint": "^8.30.1"
   },
   "lint-staged": {
-    "src//*.(ts|tsx|js|jsx)": [
+    "*.ts": [
       "eslint --fix",
       "prettier --write"
     ],
-    "src//*.(json|css|scss|md)|.(babelrc|prettierrc|eslint.js|tsconfig.json)": [
+    "*.tsx": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.jsx": [
       "eslint --fix",
       "prettier --write"
     ]
