@@ -1,8 +1,10 @@
-import express, { Router } from "express";
-import { getUsers } from "../controller/userController";
+import express, { Router } from 'express'
+import { getUsers, loginUser } from '../controller/userController'
+import { authenticateToken } from '../middleware/authen/authMiddleware'
 
-const router = express.Router();
+const router = express.Router()
 
-router.get("/", getUsers);
+router.get('/getUser', authenticateToken, getUsers)
+router.post('/login', loginUser)
 
-export const UserRoutes: Router = router;
+export const UserRoutes: Router = router
