@@ -10,18 +10,29 @@ import {
 import Home from './pages/Home';
 import { auth, provider } from './firebaseConfig';
 import { signInWithPopup } from 'firebase/auth';
+import axios from 'axios';
 
 function App() {
   const [user, setUser] = useState(null);
+
   const loginWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
+      const resultLoginWithGoogle = await signInWithPopup(auth, provider);
+      setUser(resultLoginWithGoogle.user);
+      const responseLoginUser = await axios.post(
+        'http://localhost:3001/users/login',
+        {
+          email: resultLoginWithGoogle.user.email,
+          name: resultLoginWithGoogle.user.displayName,
+        },
+      );
+      localStorage.setItem('token', responseLoginUser.data.token);
     } catch (error) {
       console.error('Error during Google sign-in:', error);
       alert('Error logging in with Google. Please try again.');
     }
   };
+
   return (
     <Router>
       {!user ? (
