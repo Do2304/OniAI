@@ -7,7 +7,7 @@ import { userLoginSchema } from '../schema/userSchemas'
 
 const router = express.Router()
 
-router.get('/getUser', authenticateToken, getUsers)
+router.get('/getUsers', authenticateToken, getUsers)
 router.post('/login', validateData(userLoginSchema), loginUser)
 
 export const UserRoutes: Router = router
