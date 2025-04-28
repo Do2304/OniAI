@@ -1,9 +1,9 @@
-import { getUserService, loginUserService } from '../services/userService'
+import * as userService from '../services/userService'
 
 export const getUsers = async (req, res) => {
   try {
     const userId = req.user.id
-    const user = await getUserService(userId)
+    const user = await userService.getUser(userId)
     if (!user) return res.status(404).json({ error: 'User not found' })
     res.json(user)
   } catch (error) {
@@ -15,7 +15,7 @@ export const getUsers = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, name } = req.body
   try {
-    const token = await loginUserService(email, name) 
+    const token = await userService.login(email, name) 
     res.json({ token })
   } catch (error) {
     console.error('Error logging in', error)

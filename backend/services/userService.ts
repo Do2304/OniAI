@@ -4,7 +4,13 @@ import jwt from 'jsonwebtoken'
 const prisma = new PrismaClient()
 const SECRET_KEY = process.env.JWT_SECRET || 'luli'
 
-export const getUserService = async (userId: number) => {
+interface User {
+  id: number
+  email: string
+  name: string
+}
+
+export const getUser = async (userId: number): Promise<User | null> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -17,7 +23,7 @@ export const getUserService = async (userId: number) => {
   return user
 }
 
-export const loginUserService = async (email: string, name: string) => {
+export const login = async (email: string, name: string) => {
   let user = await prisma.user.findUnique({ where: { email } })
 
   if (!user) {
