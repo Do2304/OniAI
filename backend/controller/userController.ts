@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.JWT_SECRET || 'luli'
 
 export const getUsers = async (req, res) => {
   try {
-    const userId = req.user.id // Lấy ID từ token
+    const userId = req.user.id 
     console.log("req.user",req.user);   
     console.log('userId', userId)
     console.log('======================')
@@ -21,7 +21,7 @@ export const getUsers = async (req, res) => {
     })
 
     if (!user) return res.status(404).json({ error: 'User not found' })
-    res.json(user) // Trả về thông tin người dùng hiện tại
+    res.json(user) 
   } catch (error) {
     console.error('Error fetching user', error)
     res.status(500).json({ error: 'Something went wrong' })
