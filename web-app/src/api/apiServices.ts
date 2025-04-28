@@ -1,8 +1,8 @@
 import axiosInstance from '@/config/axiosConfig';
 
 const apiPath = {
-  getUser: '/users/getUser',
-  login: '/users/login',
+  getUser: '/v1/getUsers',
+  login: '/v1/login',
 };
 
 export const getUserInfo = async () => {
