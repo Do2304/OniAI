@@ -10,7 +10,7 @@ import {
 import Home from './pages/Home';
 import { auth, provider } from './firebaseConfig';
 import { signInWithPopup } from 'firebase/auth';
-import { loginUser } from './api/apiServices';
+import { loginUser } from './api/userService';
 
 function App() {
   const [user, setUser] = useState(null);

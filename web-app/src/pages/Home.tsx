@@ -1,28 +1,21 @@
-import { getUserInfo } from '@/api/apiServices';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getUserInfo } from '@/api/userService';
 
 const Home = () => {
-  const [infoUser, setInfoUser] = useState(null);
-
-  const handClick = async () => {
-    try {
-      const responseGetUser = await getUserInfo();
-      setInfoUser(responseGetUser);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    }
-  };
+  const {
+    data: infoUser,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ['userInfo'],
+    queryFn: getUserInfo,
+  });
 
   return (
     <div>
       <h1>Đây là Trang Chính sau khi bạn đăng nhập!</h1>
-      <Button
-        style={{ marginTop: '20px', marginBottom: '20px' }}
-        onClick={handClick}
-      >
-        Xem thông tin{' '}
-      </Button>
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Error fetching users: {error.message}</p>}
       {infoUser && (
         <>
           <h1>InfoUser: {infoUser.name}</h1>
@@ -32,4 +25,5 @@ const Home = () => {
     </div>
   );
 };
+
 export default Home;
