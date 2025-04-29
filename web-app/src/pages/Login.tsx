@@ -2,11 +2,9 @@ import { Button } from '@/components/ui/button';
 import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '@/firebaseConfig';
 import { loginUser } from '@/api/userService';
-import { useUser } from '@/App';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { setIsLogin } = useUser();
   const navigate = useNavigate();
 
   const loginWithGoogle = async () => {
@@ -17,7 +15,6 @@ const Login = () => {
         resultLoginWithGoogle.user.email,
         resultLoginWithGoogle.user.displayName,
       );
-      setIsLogin(true);
       navigate('/home');
       localStorage.setItem('token', responseLoginUser.token);
     } catch (error) {
