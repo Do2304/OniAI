@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import './App.css';
-import { Button } from '@/components/ui/button';
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,31 +6,20 @@ import {
   Navigate,
 } from 'react-router-dom';
 import Home from './pages/Home';
-import { auth, provider } from './firebaseConfig';
-import { signInWithPopup } from 'firebase/auth';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+import ProtectedRoutes from './utils/ProtectedRoutes.tsx';
 
 function App() {
-  const [user, setUser] = useState(null);
-  const loginWithGoogle = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      setUser(result.user);
-    } catch (error) {
-      console.error('Error during Google sign-in:', error);
-      alert('Error logging in with Google. Please try again.');
-    }
-  };
   return (
     <Router>
-      {!user ? (
-        <div className="flex flex-col items-center justify-center min-h-svh">
-          <Button onClick={loginWithGoogle}>Đăng Nhập Bằng GOOGLE</Button>
-        </div>
-      ) : (
-        <Navigate to="/home" />
-      )}
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/home" element={<Home />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
