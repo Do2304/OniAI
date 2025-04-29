@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import './App.css';
-import { Button } from '@/components/ui/button';
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,42 +6,41 @@ import {
   Navigate,
 } from 'react-router-dom';
 import Home from './pages/Home';
-import { auth, provider } from './firebaseConfig';
-import { signInWithPopup } from 'firebase/auth';
-import { loginUser } from './api/userService';
+import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+import ProtectedRoutes from './utils/ProtectedRoutes.tsx';
+import { createContext, useContext, useState } from 'react';
 
-function App() {
-  const [user, setUser] = useState(null);
+const UserContext = createContext();
 
-  const loginWithGoogle = async () => {
-    try {
-      const resultLoginWithGoogle = await signInWithPopup(auth, provider);
-      setUser(resultLoginWithGoogle.user);
-      const responseLoginUser = await loginUser(
-        resultLoginWithGoogle.user.email,
-        resultLoginWithGoogle.user.displayName,
-      );
-
-      localStorage.setItem('token', responseLoginUser.token);
-    } catch (error) {
-      console.error('Error during Google sign-in:', error);
-      alert('Error logging in with Google. Please try again.');
-    }
-  };
+const UserProvider = ({ children }) => {
+  const [isLogin, setIsLogin] = useState(false);
 
   return (
-    <Router>
-      {!user ? (
-        <div className="flex flex-col items-center justify-center min-h-svh">
-          <Button onClick={loginWithGoogle}>Đăng Nhập Bằng GOOGLE</Button>
-        </div>
-      ) : (
-        <Navigate to="/home" />
-      )}
-      <Routes>
-        <Route path="/home" element={<Home />} />
-      </Routes>
-    </Router>
+    <UserContext.Provider value={{ isLogin, setIsLogin }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+export const useUser = () => {
+  return useContext(UserContext);
+};
+
+function App() {
+  return (
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/home" element={<Home />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 
