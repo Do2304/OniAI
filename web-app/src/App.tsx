@@ -23,7 +23,6 @@ function App() {
         resultLoginWithGoogle.user.email,
         resultLoginWithGoogle.user.displayName,
       );
-      console.log('123', responseLoginUser);
 
       localStorage.setItem('token', responseLoginUser.token);
     } catch (error) {

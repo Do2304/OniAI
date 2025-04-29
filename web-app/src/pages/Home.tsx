@@ -1,14 +1,34 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '@/api/userService';
+import { jwtDecode } from 'jwt-decode';
+
+interface TokenPayload {
+  id: number;
+}
 
 const Home = () => {
+  const token = localStorage.getItem('token');
+  let userId: number | null = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode<TokenPayload>(token);
+      userId = decoded.id;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+    }
+  } else {
+    console.log('No token found');
+  }
+
   const {
     data: infoUser,
     error,
     isLoading,
   } = useQuery({
-    queryKey: ['userInfo'],
-    queryFn: getUserInfo,
+    queryKey: ['userInfo', userId],
+    queryFn: () => getUserInfo(userId),
+    enabled: !!userId,
   });
 
   return (
