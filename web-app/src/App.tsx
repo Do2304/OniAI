@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import ProtectedRoutes from './utils/ProtectedRoutes.tsx';
+import Chat from './pages/Chat.tsx';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route element={<ProtectedRoutes />}>
           <Route path="/home" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/login" />} />
