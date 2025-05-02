@@ -3,14 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { chatUser } from '@/api/userService';
 
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
 const Chat = () => {
-  const [input, setInput] = useState<string>('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
 
   const handleSend = async () => {
     if (!input) return;
@@ -18,20 +13,24 @@ const Chat = () => {
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
 
-    try {
-      const responseChatGPT = await chatUser({ newMessages });
-      console.log('Response from Chat GPT', responseChatGPT);
+    const responseChat = await chatUser(newMessages);
+    console.log('responseChat', responseChat);
 
+    const eventSource = new EventSource('http://localhost:3001/v1/chat/stream');
+
+    eventSource.onmessage = (event) => {
+      const messageContent = event.data;
       setMessages((prevMessages) => [
         ...prevMessages,
-        {
-          role: 'assistant',
-          content: responseChatGPT.content,
-        },
+        { role: 'assistant', content: messageContent },
       ]);
-    } catch (error) {
-      console.error('Error fetching data from backend:', error);
-    }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error('Error occurred:', error);
+      eventSource.close();
+    };
+
     setInput('');
   };
 
