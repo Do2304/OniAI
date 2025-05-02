@@ -6,7 +6,7 @@ export const chatUser = async (req, res) => {
   if (req.method === 'POST') {
     const messages = req.body.messages
 
-    if (!messages ) {
+    if (!messages) {
       return res.status(400).send('No messages provided')
     }
     console.log('Received messages:', messages)
@@ -24,7 +24,7 @@ export const chatUser = async (req, res) => {
           },
         },
       )
-      res.json(response.data);
+      res.json(response.data)
     } catch (error) {
       console.error('Error fetching data from OpenAI:', error)
       res.status(500).send('Error fetching data')
@@ -33,13 +33,16 @@ export const chatUser = async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
+    const messages = JSON.parse(req.query.messages || '[]')
+    console.log('messs:', messages)
 
     try {
       const response = await axios.post(
         'https://api.openai.com/v1/chat/completions',
         {
           model: 'gpt-3.5-turbo',
-          messages: req.body.messages,
+          messages: messages,
+          stream: true,
         },
         {
           headers: {

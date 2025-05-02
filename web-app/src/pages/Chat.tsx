@@ -16,7 +16,12 @@ const Chat = () => {
     const responseChat = await chatUser(newMessages);
     console.log('responseChat', responseChat);
 
-    const eventSource = new EventSource('http://localhost:3001/v1/chat/stream');
+    const query = encodeURIComponent(JSON.stringify(newMessages));
+    console.log(query);
+
+    const eventSource = new EventSource(
+      `http://localhost:3001/v1/chat/stream?messages=${query}`,
+    );
 
     eventSource.onmessage = (event) => {
       const messageContent = event.data;
