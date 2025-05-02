@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { chatUser } from '@/api/chatService';
+import { chatUser } from '@/api/userService';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,23 +14,24 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input) return;
-    const newMessages: Message[] = [
-      ...messages,
-      { role: 'user', content: input },
-    ];
+
+    const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
 
     try {
-      const response = await chatUser(newMessages);
-      const botMessage = response.choices[0].message.content;
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: botMessage },
+      const responseChatGPT = await chatUser({ newMessages });
+      console.log('Response from Chat GPT', responseChatGPT);
+
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          role: 'assistant',
+          content: responseChatGPT.content,
+        },
       ]);
     } catch (error) {
-      console.error('Error fetching data from OpenAI:', error);
+      console.error('Error fetching data from backend:', error);
     }
-
     setInput('');
   };
 
