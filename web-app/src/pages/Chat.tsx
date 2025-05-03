@@ -1,34 +1,45 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { chatUser } from '@/api/userService';
 
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
+  const [assistantResponse, setAssistantResponse] = useState('');
 
   const handleSend = async () => {
     if (!input) return;
 
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
-
-    const responseChat = await chatUser(newMessages);
-    console.log('responseChat', responseChat);
+    setAssistantResponse('');
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
-    console.log(query);
-
     const eventSource = new EventSource(
       `http://localhost:3001/v1/chat/stream?messages=${query}`,
     );
 
     eventSource.onmessage = (event) => {
-      const messageContent = event.data;
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { role: 'assistant', content: messageContent },
-      ]);
+      console.log('Received raw data:', event.data);
+      if (event.data === '[DONE]') {
+        eventSource.close();
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { role: 'assistant', content: assistantResponse },
+        ]);
+        return;
+      }
+
+      try {
+        const jsonData = event.data.startsWith('data: ')
+          ? event.data.substring(6)
+          : event.data;
+        const messageData = JSON.parse(jsonData);
+        const messageContent = messageData.choices[0].delta.content || '';
+        setAssistantResponse((prev) => prev + messageContent);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+      }
     };
 
     eventSource.onerror = (error) => {
@@ -46,7 +57,7 @@ const Chat = () => {
         {messages.map((msg, index) => (
           <div key={index}>
             <strong>{msg.role === 'user' ? 'Luli:' : 'Bot:'}</strong>{' '}
-            {msg.content}
+            {msg.role === 'assistant' ? assistantResponse : msg.content}
           </div>
         ))}
       </div>

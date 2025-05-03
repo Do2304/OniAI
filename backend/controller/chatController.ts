@@ -50,6 +50,7 @@ export const chatUser = async (req, res) => {
             'Content-Type': 'application/json',
             responseType: 'stream',
           },
+          responseType: 'stream',
         },
       )
 
