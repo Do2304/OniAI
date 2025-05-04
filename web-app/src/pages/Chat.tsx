@@ -5,15 +5,12 @@ import { Input } from '@/components/ui/input';
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
-  const [assistantResponse, setAssistantResponse] = useState('');
-  const [check, setCheck] = useState(false);
 
   const handleSend = async () => {
     if (!input) return;
 
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
-    setAssistantResponse('');
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
     const eventSource = new EventSource(
@@ -21,37 +18,25 @@ const Chat = () => {
     );
 
     eventSource.onmessage = (event) => {
-      console.log('Received raw data:', event.data);
       const jsonData = event.data.startsWith('data: ')
         ? event.data.substring(6)
         : event.data;
       const messageData = JSON.parse(jsonData);
+      const messageContent = messageData.choices[0].delta.content;
+      console.log(messageContent);
       const messageContentFinish = messageData.choices[0].finish_reason;
-      if (messageContentFinish === 'stop') {
-        setCheck(true);
-        if (check) {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            { role: 'assistant', content: assistantResponse },
-          ]);
-        }
-        eventSource.close();
-        // setMessages((prevMessages) => [
-        //   ...prevMessages,
-        //   { role: 'assistant', content: assistantResponse },
-        // ]);
-        // return;
+      console.log(messageContentFinish);
+      if (messageContent) {
+        console.log(messageContent);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { role: 'assistant', content: messageContent },
+        ]);
       }
-      const messageContent = messageData.choices[0].delta.content || '';
-      setAssistantResponse((prev) => prev + messageContent);
+      if (messageContentFinish === 'stop') {
+        eventSource.close();
+      }
     };
-    console.log(check);
-    // if (check) {
-    //   setMessages((prevMessages) => [
-    //     ...prevMessages,
-    //     { role: 'assistant', content: assistantResponse },
-    //   ]);
-    // }
 
     eventSource.onerror = (error) => {
       console.error('Error occurred:', error);
