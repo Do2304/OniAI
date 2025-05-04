@@ -6,6 +6,7 @@ const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [assistantResponse, setAssistantResponse] = useState('');
+  const [check, setCheck] = useState(false);
 
   const handleSend = async () => {
     if (!input) return;
@@ -21,7 +22,19 @@ const Chat = () => {
 
     eventSource.onmessage = (event) => {
       console.log('Received raw data:', event.data);
-      if (event.data === '[DONE]') {
+      const jsonData = event.data.startsWith('data: ')
+        ? event.data.substring(6)
+        : event.data;
+      const messageData = JSON.parse(jsonData);
+      const messageContentFinish = messageData.choices[0].finish_reason;
+      if (messageContentFinish === 'stop') {
+        setCheck(true);
+        if (check) {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { role: 'assistant', content: assistantResponse },
+          ]);
+        }
         eventSource.close();
         // setMessages((prevMessages) => [
         //   ...prevMessages,
@@ -29,25 +42,16 @@ const Chat = () => {
         // ]);
         // return;
       }
-
-      try {
-        const jsonData = event.data.startsWith('data: ')
-          ? event.data.substring(6)
-          : event.data;
-        const messageData = JSON.parse(jsonData);
-        const messageContent = messageData.choices[0].delta.content || '';
-        if (messageContent !== '') {
-          setAssistantResponse((prev) => prev + messageContent);
-        }
-      } catch (error) {
-        console.error('Error parsing JSON:', error);
-      }
+      const messageContent = messageData.choices[0].delta.content || '';
+      setAssistantResponse((prev) => prev + messageContent);
     };
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { role: 'assistant', content: assistantResponse },
-    ]);
+    console.log(check);
+    // if (check) {
+    //   setMessages((prevMessages) => [
+    //     ...prevMessages,
+    //     { role: 'assistant', content: assistantResponse },
+    //   ]);
+    // }
 
     eventSource.onerror = (error) => {
       console.error('Error occurred:', error);
