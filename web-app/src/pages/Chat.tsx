@@ -5,12 +5,14 @@ import { Input } from '@/components/ui/input';
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
+  const [assistantResponse, setAssistantResponse] = useState('');
 
   const handleSend = async () => {
     if (!input) return;
 
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
+    setAssistantResponse('');
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
     const eventSource = new EventSource(
@@ -25,7 +27,7 @@ const Chat = () => {
         //   ...prevMessages,
         //   { role: 'assistant', content: assistantResponse },
         // ]);
-        return;
+        // return;
       }
 
       try {
@@ -34,14 +36,18 @@ const Chat = () => {
           : event.data;
         const messageData = JSON.parse(jsonData);
         const messageContent = messageData.choices[0].delta.content || '';
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { role: 'assistant', content: messageContent },
-        ]);
+        if (messageContent !== '') {
+          setAssistantResponse((prev) => prev + messageContent);
+        }
       } catch (error) {
         console.error('Error parsing JSON:', error);
       }
     };
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { role: 'assistant', content: assistantResponse },
+    ]);
 
     eventSource.onerror = (error) => {
       console.error('Error occurred:', error);
@@ -50,7 +56,7 @@ const Chat = () => {
 
     setInput('');
   };
-  console.log('message', messages);
+  console.log('mess:', messages);
 
   return (
     <div className="max-w-md mx-auto p-4">
@@ -60,6 +66,7 @@ const Chat = () => {
           <div key={index}>
             <strong>{msg.role === 'user' ? 'Luli:' : 'Bot:'}</strong>{' '}
             {msg.content}
+            {/* {msg.role === 'assistant' ? assistantResponse : msg.content} */}
           </div>
         ))}
       </div>
