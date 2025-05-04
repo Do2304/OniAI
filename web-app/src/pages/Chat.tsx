@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 const Chat = () => {
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const handleSend = async () => {
     if (!input) return;
@@ -14,7 +19,7 @@ const Chat = () => {
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
     const eventSource = new EventSource(
-      `http://localhost:3001/v1/chat/stream?messages=${query}`,
+      `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}`,
     );
 
     eventSource.onmessage = (event) => {
@@ -26,11 +31,13 @@ const Chat = () => {
       console.log(messageContent);
       const messageContentFinish = messageData.choices[0].finish_reason;
       console.log(messageContentFinish);
+      let resultMessage = '';
       if (messageContent) {
         console.log(messageContent);
+        resultMessage += messageContent;
         setMessages((prevMessages) => [
           ...prevMessages,
-          { role: 'assistant', content: messageContent },
+          { role: 'assistant', content: resultMessage },
         ]);
       }
       if (messageContentFinish === 'stop') {
