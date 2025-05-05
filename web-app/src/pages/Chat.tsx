@@ -28,17 +28,23 @@ const Chat = () => {
         : event.data;
       const messageData = JSON.parse(jsonData);
       const messageContent = messageData.choices[0].delta.content;
-      console.log(messageContent);
       const messageContentFinish = messageData.choices[0].finish_reason;
-      console.log(messageContentFinish);
-      let resultMessage = '';
+
       if (messageContent) {
-        console.log(messageContent);
-        resultMessage += messageContent;
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { role: 'assistant', content: resultMessage },
-        ]);
+        setMessages((prevMessages) => {
+          const lastMessage = prevMessages[prevMessages.length - 1];
+          if (lastMessage && lastMessage.role === 'assistant') {
+            return [
+              ...prevMessages.slice(0, -1),
+              { ...lastMessage, content: lastMessage.content + messageContent },
+            ];
+          } else {
+            return [
+              ...prevMessages,
+              { role: 'assistant', content: messageContent },
+            ];
+          }
+        });
       }
       if (messageContentFinish === 'stop') {
         eventSource.close();
