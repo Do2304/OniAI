@@ -19,9 +19,8 @@ const Chat = () => {
     setMessages(newMessages);
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
-    const eventSource = new EventSource(
-      `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}`,
-    );
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}`;
+    const eventSource = new EventSource(apiChat);
 
     eventSource.onmessage = (event) => processStreamEvent(event, setMessages);
 
