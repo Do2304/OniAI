@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,12 +18,14 @@ const Chat = () => {
 
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
+    const currentMessagesId = uuidv4();
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
     const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}`;
     const eventSource = new EventSource(apiChat);
 
-    eventSource.onmessage = (event) => processStreamEvent(event, setMessages);
+    eventSource.onmessage = (event) =>
+      processStreamEvent(event, setMessages, currentMessagesId);
 
     eventSource.onerror = (error) => {
       console.error('Error occurred:', error);
