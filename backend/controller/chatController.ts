@@ -12,10 +12,12 @@ export const chatUser = async (req, res) => {
   res.setHeader('Connection', 'keep-alive')
   const messages = JSON.parse(req.query.messages || '[]')
   console.log('messs:', messages)
+  const lastMessages = messages.slice(-1)
+  console.log('lats:', lastMessages)
 
   try {
     await prisma.conversation.createMany({
-      data: messages.map((msg) => ({
+      data: lastMessages.map((msg) => ({
         userId: '1',
         content: msg.content,
         role: msg.role,
