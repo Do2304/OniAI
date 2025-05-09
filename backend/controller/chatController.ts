@@ -34,20 +34,42 @@ export const chatUser = async (req, res) => {
         responseType: 'stream',
       },
     )
-    // let fullContent = ''
+    let fullContent = ''
     response.data.on('data', (chunk) => {
       const data = chunk.toString()
       // console.log('Received chunk:', data)
       res.write(`data: ${data}\n\n`)
+
       //Save database
       // console.log(data)
-      const jsonData = data.startsWith('data: ')
-        ? data.substring(6).trim()
-        : data.trim()
+      const jsonData = data.startsWith('data: ') ? data.substring(6) : data
+      // const jsonData = data.slice(6).trim()
+      // const jsonData = data.split('data: ')[1] || ''
       console.log(jsonData)
+      if (jsonData === '[DONE]') {
+        return
+      }
+      const messageData = JSON.parse(jsonData)
+      console.log(messageData)
+
+      const messageContent = messageData.choices[0].delta.content
+      const messageContentFinish = messageData.choices[0].finish_reason
+      if (messageContent) {
+        fullContent += messageContent
+      }
+      if (messageContentFinish === 'stop') {
+        return
+      }
     })
 
-    response.data.on('end', () => {
+    response.data.on('end', async () => {
+      await prisma.conversation.create({
+        data: {
+          userId: '1',
+          content: fullContent,
+          role: 'assistant',
+        },
+      })
       res.end()
     })
 
