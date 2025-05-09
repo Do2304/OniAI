@@ -41,25 +41,31 @@ export const chatUser = async (req, res) => {
       res.write(`data: ${data}\n\n`)
 
       //Save database
+      // console.log('-----------')
       // console.log(data)
-      const jsonData = data.startsWith('data: ') ? data.substring(6) : data
-      // const jsonData = data.slice(6).trim()
-      // const jsonData = data.split('data: ')[1] || ''
-      console.log(jsonData)
-      if (jsonData === '[DONE]') {
-        return
-      }
-      const messageData = JSON.parse(jsonData)
-      console.log(messageData)
-
-      const messageContent = messageData.choices[0].delta.content
-      const messageContentFinish = messageData.choices[0].finish_reason
-      if (messageContent) {
-        fullContent += messageContent
-      }
-      if (messageContentFinish === 'stop') {
-        return
-      }
+      // console.log('----------')
+      const jsonData1 = data
+        .replace(/^data: /, '')
+        .replace(/\n+/g, '\n')
+        .trim()
+      // console.log('xxxxxxx-------')
+      // console.log(jsonData1)
+      // console.log('xxxxxxx-------')
+      const parts = jsonData1.split('\n')
+      parts.forEach((part) => {
+        const jsonDataString = part.startsWith('data: ')
+          ? part.replace(/^data: /, '')
+          : part
+        // console.log(jsonDataString)
+        try {
+          const jsonData = JSON.parse(jsonDataString.trim())
+          const content = jsonData.choices[0]?.delta?.content || ''
+          fullContent += content
+          // console.log(fullContent)
+        } catch (error) {
+          console.error('Error parsing JSON:', error)
+        }
+      })
     })
 
     response.data.on('end', async () => {
