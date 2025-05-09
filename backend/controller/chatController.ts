@@ -34,12 +34,17 @@ export const chatUser = async (req, res) => {
         responseType: 'stream',
       },
     )
-
+    // let fullContent = ''
     response.data.on('data', (chunk) => {
       const data = chunk.toString()
-      console.log('Received chunk:', data)
+      // console.log('Received chunk:', data)
       res.write(`data: ${data}\n\n`)
       //Save database
+      // console.log(data)
+      const jsonData = data.startsWith('data: ')
+        ? data.substring(6).trim()
+        : data.trim()
+      console.log(jsonData)
     })
 
     response.data.on('end', () => {
