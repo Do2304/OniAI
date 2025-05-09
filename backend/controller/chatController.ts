@@ -1,4 +1,7 @@
 import axios from 'axios'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export const chatUser = async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream')
@@ -8,6 +11,13 @@ export const chatUser = async (req, res) => {
   console.log('messs:', messages)
 
   try {
+    await prisma.conversation.createMany({
+      data: messages.map((msg) => ({
+        userId: '1',
+        content: msg.content,
+        role: msg.role,
+      })),
+    })
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -29,6 +39,7 @@ export const chatUser = async (req, res) => {
       const data = chunk.toString()
       console.log('Received chunk:', data)
       res.write(`data: ${data}\n\n`)
+      //Save database
     })
 
     response.data.on('end', () => {
