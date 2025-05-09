@@ -1,7 +1,10 @@
-import axios from 'axios'
 import { PrismaClient } from '@prisma/client'
+import OpenAI from 'openai'
 
 const prisma = new PrismaClient()
+const client = new OpenAI({
+  apiKey: process.env.API_TOKEN,
+})
 
 export const chatUser = async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream')
@@ -18,71 +21,30 @@ export const chatUser = async (req, res) => {
         role: msg.role,
       })),
     })
-    const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
-      {
-        model: 'gpt-3.5-turbo',
-        messages: messages,
-        stream: true,
+    const responseChatGPT = await client.chat.completions.create({
+      model: 'gpt-4o',
+      messages: messages,
+      stream: true,
+    })
+    let fullMessage = ''
+    for await (const event of responseChatGPT) {
+      // console.log(event.choices[0].delta.content)
+      const message = event.choices[0]?.delta.content
+      if (message) {
+        fullMessage += message
+        res.write(`data: ${message}\n\n`)
+      }
+    }
+    // console.log(fullMessage)
+    await prisma.conversation.create({
+      data: {
+        userId: '1',
+        content: fullMessage,
+        role: 'assistant',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.API_TOKEN}`,
-          'Content-Type': 'application/json',
-          responseType: 'stream',
-        },
-        responseType: 'stream',
-      },
-    )
-    let fullContent = ''
-    response.data.on('data', (chunk) => {
-      const data = chunk.toString()
-      // console.log('Received chunk:', data)
-      res.write(`data: ${data}\n\n`)
-
-      //Save database
-      // console.log('-----------')
-      // console.log(data)
-      // console.log('----------')
-      const jsonData1 = data
-        .replace(/^data: /, '')
-        .replace(/\n+/g, '\n')
-        .trim()
-      // console.log('xxxxxxx-------')
-      // console.log(jsonData1)
-      // console.log('xxxxxxx-------')
-      const parts = jsonData1.split('\n')
-      parts.forEach((part) => {
-        const jsonDataString = part.startsWith('data: ')
-          ? part.replace(/^data: /, '')
-          : part
-        // console.log(jsonDataString)
-        try {
-          const jsonData = JSON.parse(jsonDataString.trim())
-          const content = jsonData.choices[0]?.delta?.content || ''
-          fullContent += content
-          // console.log(fullContent)
-        } catch (error) {
-          console.error('Error parsing JSON:', error)
-        }
-      })
     })
-
-    response.data.on('end', async () => {
-      await prisma.conversation.create({
-        data: {
-          userId: '1',
-          content: fullContent,
-          role: 'assistant',
-        },
-      })
-      res.end()
-    })
-
-    response.data.on('error', (error) => {
-      console.error('Stream error:', error)
-      res.status(500).send('Error fetching data')
-    })
+    res.write('event: end\n\n')
+    res.end()
   } catch (error) {
     console.error('Error fetching data from OpenAI:', error)
     res.status(500).send('Error fetching data')

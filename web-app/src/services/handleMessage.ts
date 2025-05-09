@@ -1,10 +1,7 @@
 export const processStreamEvent = (event, setMessages, currentMessagesId) => {
-  const jsonData = event.data.startsWith('data: ')
-    ? event.data.substring(6)
-    : event.data;
-  const messageData = JSON.parse(jsonData);
-  const messageContent = messageData.choices[0].delta.content;
-  const messageContentFinish = messageData.choices[0].finish_reason;
+  console.log(event);
+  // console.log(event.data);
+  const messageContent = event.data;
 
   if (messageContent) {
     setMessages((prevMessages) => {
@@ -21,8 +18,5 @@ export const processStreamEvent = (event, setMessages, currentMessagesId) => {
         ];
       }
     });
-  }
-  if (messageContentFinish === 'stop') {
-    eventSource.close();
   }
 };

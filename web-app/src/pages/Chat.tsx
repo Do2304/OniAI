@@ -28,7 +28,7 @@ const Chat = () => {
       processStreamEvent(event, setMessages, currentMessagesId);
 
     eventSource.onerror = (error) => {
-      console.error('Error occurred:', error);
+      // console.error('Error occurred:', error);
       eventSource.close();
     };
 
