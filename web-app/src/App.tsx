@@ -17,7 +17,7 @@ function App() {
       <Routes>
         <Route element={<ProtectedRoutes />}>
           <Route path="/home" element={<Home />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route path="/chat/:conversationId" element={<Chat />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/login" />} />
