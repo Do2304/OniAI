@@ -15,26 +15,26 @@ interface Message {
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [infoUserId, setInfoUserId] = useState('');
+  const [userId, setUserId] = useState('');
   const { conversationId } = useParams<{ conversationId: string }>();
   const location = useLocation();
   const { infoUser } = location.state || {};
   // console.log(conversationId);
   // console.log('infoUserId', infoUserId);
 
-  useEffect(() => {
-    const fetchInitialMessages = async () => {
-      try {
-        const historyMessages = await getHistoryConversation(conversationId);
-        // console.log(historyMessages);
-        setMessages(historyMessages.messages);
-        setInfoUserId(historyMessages.infoUser.id.toString());
-      } catch (error) {
-        console.error('Error fetching initial messages:', error);
-      }
-    };
-    fetchInitialMessages();
-  }, [conversationId, infoUserId]);
+  // useEffect(() => {
+  //   const fetchInitialMessages = async () => {
+  //     try {
+  //       const historyMessages = await getHistoryConversation(conversationId);
+  //       // console.log(historyMessages);
+  //       setMessages(historyMessages.messages);
+  //       setInfoUserId(historyMessages.infoUser.id.toString());
+  //     } catch (error) {
+  //       console.error('Error fetching initial messages:', error);
+  //     }
+  //   };
+  //   fetchInitialMessages();
+  // }, [conversationId, infoUserId]);
 
   const handleSend = async () => {
     if (!input) return;
@@ -42,9 +42,15 @@ const Chat = () => {
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
     const currentMessagesId = uuidv4();
+    // console.log('input', input);
+    const token = localStorage.getItem('token');
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    let userInfo = decoded.id;
 
-    const query = encodeURIComponent(JSON.stringify(newMessages));
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId}&infoUserId=${infoUserId ? infoUserId : infoUser.id}`;
+    console.log('userInfo', userInfo);
+
+    const query = encodeURIComponent(JSON.stringify(input));
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId}&userId=${userInfo}`;
     const eventSource = new EventSource(apiChat);
 
     eventSource.onmessage = (event) =>

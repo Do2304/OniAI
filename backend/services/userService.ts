@@ -5,12 +5,12 @@ const prisma = new PrismaClient()
 const SECRET_KEY = process.env.JWT_SECRET || 'luli'
 
 interface User {
-  id: number
+  id: string
   email: string
   name: string
 }
 
-export const getUser = async (userId: number): Promise<User | null> => {
+export const getUser = async (userId: string): Promise<User | null> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {

@@ -13,44 +13,107 @@ export const chatUser = async (req, res) => {
   res.setHeader('Connection', 'keep-alive')
   const messages = JSON.parse(req.query.messages || '[]')
   const conversationId = req.query.conversationId
-  const infoUserId = req.query.infoUserId
-  // console.log('infoUserId', infoUserId)
-  // console.log('messs:', messages)
-  const lastMessages = messages.slice(-1)
-  // console.log('lats:', lastMessages)
+  const userId = req.query.userId
+  console.log('messs:', messages)
+  console.log('conversationId:', conversationId)
+  console.log('userId:', userId)
 
   try {
-    await prisma.conversation.createMany({
-      data: lastMessages.map((msg) => ({
-        userId: infoUserId,
-        conversationId: conversationId,
-        content: msg.content,
-        role: msg.role,
-      })),
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: {
+        user: true,
+        messages: true,
+      },
     })
-    const responseChatGPT = await client.chat.completions.create({
+    // console.log('conversation-----------', conversation)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    })
+    if (!user) {
+      throw new Error('User not found')
+    }
+    const newConversationId = uuidv4()
+    if (conversation === null) {
+      await prisma.conversation.create({
+        data: {
+          id: newConversationId,
+          title: '',
+          user: {
+            connect: { id: userId },
+          },
+        },
+      })
+      await prisma.message.create({
+        data: {
+          conversationId: newConversationId,
+          content: messages,
+          role: 'User',
+        },
+      })
+    } else {
+      await prisma.conversation.create({
+        data: {
+          id: conversationId,
+          title: '',
+          user: {
+            connect: { id: userId },
+          },
+        },
+      })
+      await prisma.message.create({
+        data: {
+          conversationId: conversationId,
+          content: messages,
+          role: 'User',
+        },
+      })
+    }
+
+    const responseChatGPT = await client.responses.create({
       model: 'gpt-4o',
-      messages: messages,
+      input: messages,
       stream: true,
     })
     let fullMessage = ''
     for await (const event of responseChatGPT) {
-      // console.log(event.choices[0].delta.content)
-      const message = event.choices[0]?.delta.content
-      if (message) {
-        fullMessage += message
-        res.write(`data: ${message}\n\n`)
+      console.log(event)
+      if (event.type === 'response.output_text.delta') {
+        console.log(event.delta)
+        const message = event.delta
+        if (message) {
+          fullMessage += message
+          res.write(`data: ${message}\n\n`)
+        }
       }
     }
     // console.log(fullMessage)
-    await prisma.conversation.create({
-      data: {
-        userId: infoUserId,
-        conversationId: conversationId,
-        content: fullMessage,
-        role: 'assistant',
-      },
-    })
+    //   await prisma.conversation.create({
+    //     data: {
+    //       userId: infoUserId,
+    //       conversationId: conversationId,
+    //       content: fullMessage,
+    //       role: 'assistant',
+    //     },
+    //   })
+    if (conversation === null) {
+      await prisma.message.create({
+        data: {
+          conversationId: newConversationId,
+          content: fullMessage,
+          role: 'Assistant',
+        },
+      })
+    } else {
+      await prisma.message.create({
+        data: {
+          conversationId: conversationId,
+          content: fullMessage,
+          role: 'Assistant',
+        },
+      })
+    }
+
     res.write('event: end\n\n')
     res.end()
   } catch (error) {
@@ -83,19 +146,18 @@ export const startConversation = async (req, res) => {
 }
 
 export const getMessagesByConversationId = async (req, res) => {
-  const { conversationId } = req.params
-  const infoUser = req.user
-  // console.log('req.user:', req.user)
-
+  // const { conversationId } = req.params
+  // const infoUser = req.user
+  console.log('req.user:', req.user)
   try {
-    const messages = await prisma.conversation.findMany({
-      where: { conversationId: conversationId, userId: infoUser.id.toString() },
-      select: { content: true, role: true },
-    })
-    if (messages.length === 0) {
-      return res.status(404).json({ message: 'No messages found' })
-    }
-    res.json({ messages, infoUser })
+    //   const messages = await prisma.conversation.findMany({
+    //     where: { conversationId: conversationId, userId: infoUser.id.toString() },
+    //     select: { content: true, role: true },
+    //   })
+    //   if (messages.length === 0) {
+    //     return res.status(404).json({ message: 'No messages found' })
+    //   }
+    //   res.json({ messages, infoUser })
   } catch (error) {
     console.error('Error fetching messages:', error)
     res
