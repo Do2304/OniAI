@@ -1,7 +1,8 @@
-import axiosInstance from '@/config/axiosOpenAiConfig';
+import axiosInstance from '@/config/axiosConfig';
 
 const apiPath = {
   chatUser: '/chat/completions',
+  conversationUser: 'v1/chat/start-conversation',
 };
 
 export const chatUser = async (messages: string) => {
@@ -9,5 +10,10 @@ export const chatUser = async (messages: string) => {
     model: 'gpt-3.5-turbo',
     messages,
   });
+  return response.data;
+};
+
+export const conversationUser = async () => {
+  const response = await axiosInstance.post(apiPath.conversationUser);
   return response.data;
 };

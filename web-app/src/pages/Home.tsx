@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '@/api/userService';
 import { jwtDecode } from 'jwt-decode';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { conversationUser } from '@/api/chatService';
 
 interface TokenPayload {
   id: number;
@@ -9,6 +12,7 @@ interface TokenPayload {
 const Home = () => {
   const token = localStorage.getItem('token');
   let userId: number | null = null;
+  const navigate = useNavigate();
 
   if (token) {
     try {
@@ -30,6 +34,11 @@ const Home = () => {
     queryFn: () => getUserInfo(userId),
     enabled: !!userId,
   });
+  const handleStartConversation = async () => {
+    const response = await conversationUser();
+    // console.log(response);
+    navigate(`/chat/${response.conversationId}`);
+  };
 
   return (
     <div>
@@ -42,6 +51,7 @@ const Home = () => {
           <h1>Email: {infoUser.email}</h1>
         </>
       )}
+      <Button onClick={handleStartConversation}>Bắt đầu cuộc trò chuyện</Button>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import OpenAI from 'openai'
+import { v4 as uuidv4 } from 'uuid'
 
 const prisma = new PrismaClient()
 const client = new OpenAI({
@@ -19,6 +20,7 @@ export const chatUser = async (req, res) => {
     await prisma.conversation.createMany({
       data: lastMessages.map((msg) => ({
         userId: '1',
+        conversationId: '1234',
         content: msg.content,
         role: msg.role,
       })),
@@ -41,6 +43,7 @@ export const chatUser = async (req, res) => {
     await prisma.conversation.create({
       data: {
         userId: '1',
+        conversationId: '123',
         content: fullMessage,
         role: 'assistant',
       },
@@ -50,5 +53,26 @@ export const chatUser = async (req, res) => {
   } catch (error) {
     console.error('Error fetching data from OpenAI:', error)
     res.status(500).send('Error fetching data')
+  }
+}
+
+export const startConversation = async (req, res) => {
+  try {
+    const conversationId = uuidv4()
+    await prisma.conversation.create({
+      data: {
+        conversationId: conversationId,
+        userId: '1',
+        content: '',
+        role: 'system',
+      },
+    })
+
+    res.json({ conversationId })
+  } catch (error) {
+    console.error('Error starting conversation:', error)
+    res
+      .status(500)
+      .json({ error: 'An error occurred while starting the conversation.' })
   }
 }
