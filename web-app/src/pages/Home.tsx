@@ -36,8 +36,10 @@ const Home = () => {
   });
   const handleStartConversation = async () => {
     const response = await conversationUser();
-    // console.log(response);
-    navigate(`/chat/${response.conversationId}`);
+    // console.log('info', response.infoUser);
+    navigate(`/chat/${response.conversationId}`, {
+      state: { infoUser: response.infoUser },
+    });
   };
 
   return (

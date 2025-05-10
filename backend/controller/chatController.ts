@@ -13,14 +13,16 @@ export const chatUser = async (req, res) => {
   res.setHeader('Connection', 'keep-alive')
   const messages = JSON.parse(req.query.messages || '[]')
   const conversationId = req.query.conversationId
-  console.log('messs:', messages)
+  const infoUserId = req.query.infoUserId
+  // console.log('infoUserId', infoUserId)
+  // console.log('messs:', messages)
   const lastMessages = messages.slice(-1)
-  console.log('lats:', lastMessages)
+  // console.log('lats:', lastMessages)
 
   try {
     await prisma.conversation.createMany({
       data: lastMessages.map((msg) => ({
-        userId: '1',
+        userId: infoUserId,
         conversationId: conversationId,
         content: msg.content,
         role: msg.role,
@@ -43,7 +45,7 @@ export const chatUser = async (req, res) => {
     // console.log(fullMessage)
     await prisma.conversation.create({
       data: {
-        userId: '1',
+        userId: infoUserId,
         conversationId: conversationId,
         content: fullMessage,
         role: 'assistant',
@@ -58,6 +60,8 @@ export const chatUser = async (req, res) => {
 }
 
 export const startConversation = async (req, res) => {
+  const infoUser = req.user
+  // console.log('req.user:', req.user)
   try {
     const conversationId = uuidv4()
     // await prisma.conversation.create({
@@ -69,7 +73,7 @@ export const startConversation = async (req, res) => {
     //   },
     // })
 
-    res.json({ conversationId })
+    res.json({ conversationId, infoUser })
   } catch (error) {
     console.error('Error starting conversation:', error)
     res
@@ -80,18 +84,18 @@ export const startConversation = async (req, res) => {
 
 export const getMessagesByConversationId = async (req, res) => {
   const { conversationId } = req.params
+  const infoUser = req.user
+  // console.log('req.user:', req.user)
 
   try {
     const messages = await prisma.conversation.findMany({
-      where: { conversationId: conversationId },
+      where: { conversationId: conversationId, userId: infoUser.id.toString() },
       select: { content: true, role: true },
     })
-
     if (messages.length === 0) {
       return res.status(404).json({ message: 'No messages found' })
     }
-
-    res.json(messages)
+    res.json({ messages, infoUser })
   } catch (error) {
     console.error('Error fetching messages:', error)
     res
