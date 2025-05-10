@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
+import { useParams } from 'react-router-dom';
+import { getHistoryConversation } from '@/api/chatService';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -12,6 +14,8 @@ interface Message {
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const { conversationId } = useParams<{ conversationId: string }>();
+  // console.log(conversationId);
 
   const handleSend = async () => {
     if (!input) return;
@@ -21,20 +25,33 @@ const Chat = () => {
     const currentMessagesId = uuidv4();
 
     const query = encodeURIComponent(JSON.stringify(newMessages));
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}`;
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId}`;
     const eventSource = new EventSource(apiChat);
 
     eventSource.onmessage = (event) =>
       processStreamEvent(event, setMessages, currentMessagesId);
 
-    eventSource.onerror = (error) => {
+    eventSource.onerror = () => {
       // console.error('Error occurred:', error);
       eventSource.close();
     };
 
     setInput('');
   };
-  console.log('mess:', messages);
+  useEffect(() => {
+    const fetchInitialMessages = async () => {
+      try {
+        const historyMessages = await getHistoryConversation(conversationId);
+        // console.log(historyMessages);
+        setMessages(historyMessages);
+      } catch (error) {
+        console.error('Error fetching initial messages:', error);
+      }
+    };
+    fetchInitialMessages();
+  }, [conversationId]);
+
+  // console.log('mess:', messages);
 
   return (
     <div className="max-w-md mx-auto p-4">

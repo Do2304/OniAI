@@ -12,6 +12,7 @@ export const chatUser = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache')
   res.setHeader('Connection', 'keep-alive')
   const messages = JSON.parse(req.query.messages || '[]')
+  const conversationId = req.query.conversationId
   console.log('messs:', messages)
   const lastMessages = messages.slice(-1)
   console.log('lats:', lastMessages)
@@ -20,7 +21,7 @@ export const chatUser = async (req, res) => {
     await prisma.conversation.createMany({
       data: lastMessages.map((msg) => ({
         userId: '1',
-        conversationId: '1234',
+        conversationId: conversationId,
         content: msg.content,
         role: msg.role,
       })),
@@ -43,7 +44,7 @@ export const chatUser = async (req, res) => {
     await prisma.conversation.create({
       data: {
         userId: '1',
-        conversationId: '123',
+        conversationId: conversationId,
         content: fullMessage,
         role: 'assistant',
       },
@@ -59,14 +60,14 @@ export const chatUser = async (req, res) => {
 export const startConversation = async (req, res) => {
   try {
     const conversationId = uuidv4()
-    await prisma.conversation.create({
-      data: {
-        conversationId: conversationId,
-        userId: '1',
-        content: '',
-        role: 'system',
-      },
-    })
+    // await prisma.conversation.create({
+    //   data: {
+    //     conversationId: conversationId,
+    //     userId: '1',
+    //     content: '',
+    //     role: 'system',
+    //   },
+    // })
 
     res.json({ conversationId })
   } catch (error) {
@@ -74,5 +75,27 @@ export const startConversation = async (req, res) => {
     res
       .status(500)
       .json({ error: 'An error occurred while starting the conversation.' })
+  }
+}
+
+export const getMessagesByConversationId = async (req, res) => {
+  const { conversationId } = req.params
+
+  try {
+    const messages = await prisma.conversation.findMany({
+      where: { conversationId: conversationId },
+      select: { content: true, role: true },
+    })
+
+    if (messages.length === 0) {
+      return res.status(404).json({ message: 'No messages found' })
+    }
+
+    res.json(messages)
+  } catch (error) {
+    console.error('Error fetching messages:', error)
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching messages.' })
   }
 }
