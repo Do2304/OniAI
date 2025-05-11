@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+// import { useLocation } from 'react-router-dom';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -14,8 +15,8 @@ const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   // const [userId, setUserId] = useState('');
-  const [conversationId2, setconversationId2] = useState('');
-  // const { conversationId } = useParams<{ conversationId: string }>();
+  // const [conversationId2, setconversationId2] = useState('');
+  const { conversationId } = useParams<{ conversationId: string }>();
   // const { infoUser } = location.state || {};
   // console.log(conversationId);
   // console.log('infoUserId', infoUserId);
@@ -45,22 +46,22 @@ const Chat = () => {
     const decoded = JSON.parse(atob(token.split('.')[1]));
     let userInfo = decoded.id;
 
-    console.log('userInfo', userInfo);
+    // console.log('userInfo', userInfo);
 
     const query = encodeURIComponent(JSON.stringify(input));
-    const initialResponse = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId2}&userId=${userInfo}`,
-    );
+    // const initialResponse = await fetch(
+    //   `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId2}&userId=${userInfo}`,
+    // );
 
-    const conversationId = initialResponse.headers.get('X-Conversation-Id');
-    // console.log('conversationId', conversationId);
-    setconversationId2(conversationId);
+    // const conversationId = initialResponse.headers.get('X-Conversation-Id');
+    // // console.log('conversationId', conversationId);
+    // setconversationId2(conversationId);
 
-    if (!conversationId) {
-      console.error('Conversation ID not found in headers');
-      return;
-    }
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId}&userId=${userInfo}`;
+    // if (!conversationId) {
+    //   console.error('Conversation ID not found in headers');
+    //   return;
+    // }
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : ''}&userId=${userInfo}`;
 
     const eventSource = new EventSource(apiChat);
     console.log('eventSource', eventSource);

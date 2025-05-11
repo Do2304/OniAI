@@ -35,11 +35,15 @@ const Home = () => {
     enabled: !!userId,
   });
   const handleStartConversation = async () => {
-    const response = await conversationUser();
+    // const response = await conversationUser();
     // console.log('info', response.infoUser);
-    navigate(`/chat/${response.conversationId}`, {
-      state: { infoUser: response.infoUser },
-    });
+    const initialResponse = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream`,
+    );
+
+    const conversationId = initialResponse.headers.get('X-Conversation-Id');
+    console.log('conversationId', conversationId);
+    navigate(`/chat/${conversationId}`);
   };
 
   return (
