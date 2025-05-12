@@ -1,5 +1,5 @@
 export const processStreamEvent = (event, setMessages, currentMessagesId) => {
-  console.log(event);
+  // console.log(event);
   // console.log(event.data);
   const messageContent = event.data;
 

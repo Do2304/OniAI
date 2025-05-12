@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 // import { useLocation } from 'react-router-dom';
 
 interface Message {
@@ -20,6 +20,7 @@ const Chat = () => {
   // const { infoUser } = location.state || {};
   // console.log(conversationId);
   // console.log('infoUserId', infoUserId);
+  const navigate = useNavigate();
 
   // useEffect(() => {
   //   const fetchInitialMessages = async () => {
@@ -37,40 +38,33 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input) return;
-
     const newMessages = [...messages, { role: 'user', content: input }];
     setMessages(newMessages);
     const currentMessagesId = uuidv4();
-    // console.log('input', input);
     const token = localStorage.getItem('token');
     const decoded = JSON.parse(atob(token.split('.')[1]));
     let userInfo = decoded.id;
 
-    // console.log('userInfo', userInfo);
-
     const query = encodeURIComponent(JSON.stringify(input));
-    // const initialResponse = await fetch(
-    //   `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId2}&userId=${userInfo}`,
-    // );
+    console.log('123', conversationId);
 
-    // const conversationId = initialResponse.headers.get('X-Conversation-Id');
-    // // console.log('conversationId', conversationId);
-    // setconversationId2(conversationId);
-
-    // if (!conversationId) {
-    //   console.error('Conversation ID not found in headers');
-    //   return;
-    // }
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : ''}&userId=${userInfo}`;
-
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : null}&userId=${userInfo}`;
     const eventSource = new EventSource(apiChat);
+    // if (!conversationId) {
+    //   const initialResponse = await fetch(
+    //     `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : null}&userId=${userInfo}`,
+    //   );
+    //   const conversationId1 = initialResponse.headers.get('X-Conversation-Id');
+    //   console.log('conversationId', conversationId1);
+    //   navigate(`/chat/${conversationId1}`);
+    // }
+
     console.log('eventSource', eventSource);
 
     eventSource.onmessage = (event) =>
       processStreamEvent(event, setMessages, currentMessagesId);
 
     eventSource.onerror = () => {
-      // console.error('Error occurred:', error);
       eventSource.close();
     };
 

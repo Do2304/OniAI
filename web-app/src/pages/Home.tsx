@@ -37,13 +37,12 @@ const Home = () => {
   const handleStartConversation = async () => {
     // const response = await conversationUser();
     // console.log('info', response.infoUser);
-    const initialResponse = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream`,
-    );
-
-    const conversationId = initialResponse.headers.get('X-Conversation-Id');
-    console.log('conversationId', conversationId);
-    navigate(`/chat/${conversationId}`);
+    // const initialResponse = await fetch(
+    //   `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream`,
+    // );
+    // const conversationId = initialResponse.headers.get('X-Conversation-Id');
+    // console.log('conversationId', conversationId);
+    navigate(`/chat`);
   };
 
   return (
