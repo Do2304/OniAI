@@ -5,7 +5,6 @@ import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
-// import { useLocation } from 'react-router-dom';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -15,20 +14,14 @@ interface Message {
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  // const [userId, setUserId] = useState('');
   const { conversationId } = useParams<{ conversationId: string }>();
-  // const { infoUser } = location.state || {};
-  // console.log(conversationId);
-  // console.log('infoUserId', infoUserId);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInitialMessages = async () => {
       try {
         const historyMessages = await getHistoryConversation(conversationId);
-        // console.log(historyMessages);
         setMessages(historyMessages.messages);
-        // setInfoUserId(historyMessages.infoUser.id.toString());
       } catch (error) {
         console.error('Error fetching initial messages:', error);
       }
@@ -70,8 +63,6 @@ const Chat = () => {
     setInput('');
   };
 
-  // console.log('mess:', messages);
-
   return (
     <div className="max-w-md mx-auto p-4">
       <strong className="pb-2.5">CHAT WITH ONI-AI</strong>
@@ -80,7 +71,6 @@ const Chat = () => {
           <div key={index}>
             <strong>{msg.role === 'user' ? 'Luli:' : 'Bot:'}</strong>{' '}
             {msg.content}
-            {/* {msg.role === 'assistant' ? assistantResponse : msg.content} */}
           </div>
         ))}
       </div>
