@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
-import { conversationUser } from '@/api/chatService';
+import { conversationUser, getHistoryConversation } from '@/api/chatService';
 // import { useLocation } from 'react-router-dom';
 
 interface Message {
@@ -22,19 +22,19 @@ const Chat = () => {
   // console.log('infoUserId', infoUserId);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const fetchInitialMessages = async () => {
-  //     try {
-  //       const historyMessages = await getHistoryConversation(conversationId);
-  //       // console.log(historyMessages);
-  //       setMessages(historyMessages.messages);
-  //       setInfoUserId(historyMessages.infoUser.id.toString());
-  //     } catch (error) {
-  //       console.error('Error fetching initial messages:', error);
-  //     }
-  //   };
-  //   fetchInitialMessages();
-  // }, [conversationId, infoUserId]);
+  useEffect(() => {
+    const fetchInitialMessages = async () => {
+      try {
+        const historyMessages = await getHistoryConversation(conversationId);
+        // console.log(historyMessages);
+        setMessages(historyMessages.messages);
+        // setInfoUserId(historyMessages.infoUser.id.toString());
+      } catch (error) {
+        console.error('Error fetching initial messages:', error);
+      }
+    };
+    fetchInitialMessages();
+  }, [conversationId]);
 
   const handleSend = async () => {
     if (!input) return;

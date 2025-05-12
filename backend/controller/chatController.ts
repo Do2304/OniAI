@@ -90,18 +90,29 @@ export const startConversation = async (req, res) => {
 }
 
 export const getMessagesByConversationId = async (req, res) => {
-  // const { conversationId } = req.params
-  // const infoUser = req.user
+  const { conversationId } = req.params
+  const infoUser = req.user
   console.log('req.user:', req.user)
   try {
-    //   const messages = await prisma.conversation.findMany({
-    //     where: { conversationId: conversationId, userId: infoUser.id.toString() },
-    //     select: { content: true, role: true },
-    //   })
-    //   if (messages.length === 0) {
-    //     return res.status(404).json({ message: 'No messages found' })
-    //   }
-    //   res.json({ messages, infoUser })
+    const messages = await prisma.message.findMany({
+      where: {
+        conversationId: conversationId,
+        conversation: {
+          userId: infoUser.id.toString(),
+        },
+      },
+      select: {
+        content: true,
+        role: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    })
+    if (messages.length === 0) {
+      return res.status(404).json({ message: 'No messages found' })
+    }
+    res.json({ messages, infoUser })
   } catch (error) {
     console.error('Error fetching messages:', error)
     res
