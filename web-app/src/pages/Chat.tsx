@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
+import { conversationUser } from '@/api/chatService';
 // import { useLocation } from 'react-router-dom';
 
 interface Message {
@@ -15,7 +16,6 @@ const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   // const [userId, setUserId] = useState('');
-  // const [conversationId2, setconversationId2] = useState('');
   const { conversationId } = useParams<{ conversationId: string }>();
   // const { infoUser } = location.state || {};
   // console.log(conversationId);
@@ -47,17 +47,16 @@ const Chat = () => {
 
     const query = encodeURIComponent(JSON.stringify(input));
     console.log('123', conversationId);
+    let startConversationId;
+    if (!conversationId) {
+      const response = await conversationUser();
+      startConversationId = response.conversationId;
+      navigate(`/chat/${response.conversationId}`);
+    }
+    console.log('start', startConversationId);
 
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : null}&userId=${userInfo}`;
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : startConversationId}&userId=${userInfo}`;
     const eventSource = new EventSource(apiChat);
-    // if (!conversationId) {
-    //   const initialResponse = await fetch(
-    //     `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId ? conversationId : null}&userId=${userInfo}`,
-    //   );
-    //   const conversationId1 = initialResponse.headers.get('X-Conversation-Id');
-    //   console.log('conversationId', conversationId1);
-    //   navigate(`/chat/${conversationId1}`);
-    // }
 
     console.log('eventSource', eventSource);
 

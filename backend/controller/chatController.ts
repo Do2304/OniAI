@@ -14,35 +14,26 @@ export const chatUser = async (req, res) => {
   console.log('conversationId', conversationId)
 
   try {
-    let currentConversationId = conversationId
-    if (conversationId === 'null') {
-      const newConversationId = uuidv4()
+    const conversationExists = await prisma.conversation.findUnique({
+      where: {
+        id: conversationId,
+      },
+    })
+    if (!conversationExists) {
       await prisma.conversation.create({
         data: {
-          id: newConversationId,
+          id: conversationId,
           title: '',
           user: {
             connect: { id: userId },
           },
         },
       })
-      currentConversationId = newConversationId
-      res.setHeader('X-Conversation-ID', newConversationId)
-      // res.status(200).send('ok')
-    } else {
-      res.setHeader('X-Conversation-ID', conversationId)
-    }
-    console.log('currentConversationId', currentConversationId)
-    const conversationExists = await prisma.conversation.findUnique({
-      where: { id: currentConversationId },
-    })
-    if (!conversationExists) {
-      return res.status(404).send('Conversation not found')
     }
 
     await prisma.message.create({
       data: {
-        conversationId: currentConversationId,
+        conversationId: conversationId,
         content: messages,
         role: 'User',
       },
@@ -71,7 +62,7 @@ export const chatUser = async (req, res) => {
 
     await prisma.message.create({
       data: {
-        conversationId: currentConversationId,
+        conversationId: conversationId,
         content: fullMessage,
         role: 'Assistant',
       },
