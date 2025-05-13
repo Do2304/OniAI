@@ -67,28 +67,43 @@ const Chat = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <strong className="pb-2.5">CHAT WITH ONI-AI</strong>
-      <div className="max-h-96 border border-gray-300 rounded-lg p-4 overflow-y-auto mb-4">
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.role === 'User' ? 'Luli:' : 'Bot:'}</strong>{' '}
-            {msg.content}
+    <>
+      <h1 className="text-3xl font-bold mb-4 text-blue-600">
+        CHAT WITH ONI-AI
+      </h1>
+      <div>
+        <div>
+          <div className="w-200 h-[550px] border border-gray-300 rounded-lg p-4 overflow-y-auto">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
+              >
+                <strong
+                  className={`block ${msg.role === 'User' ? 'text-blue-500' : 'text-gray-700'}`}
+                >
+                  {msg.role === 'User' ? 'Luli:' : 'Bot:'}
+                </strong>
+                <span className="block text-gray-800">{msg.content}</span>
+              </div>
+            ))}
           </div>
-        ))}
+          <div className="flex mt-4 ">
+            <Input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="h-[70px] mr-2"
+              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              placeholder="Hỏi bất kỳ điều gì..."
+            />
+            <Button className="h-[70px]" onClick={handleSend}>
+              Gửi
+            </Button>
+          </div>
+        </div>
       </div>
-      <div className="flex">
-        <Input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          className="flex-grow mr-2"
-          placeholder="Nhập tin nhắn..."
-        />
-        <Button onClick={handleSend}>Gửi</Button>
-      </div>
-    </div>
+    </>
   );
 };
 
