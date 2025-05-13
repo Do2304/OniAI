@@ -130,6 +130,9 @@ export const getListConversationId = async (req, res) => {
           id: infoUser.id.toString(),
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
       select: {
         id: true,
       },

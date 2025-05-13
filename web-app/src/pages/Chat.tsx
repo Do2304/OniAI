@@ -5,6 +5,7 @@ import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
+import { useLocation } from 'react-router-dom';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -16,18 +17,21 @@ const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchInitialMessages = async () => {
       try {
-        const historyMessages = await getHistoryConversation(conversationId);
-        setMessages(historyMessages.messages);
+        if (conversationId) {
+          const historyMessages = await getHistoryConversation(conversationId);
+          setMessages(historyMessages.messages);
+        }
       } catch (error) {
         console.error('Error fetching initial messages:', error);
       }
     };
     fetchInitialMessages();
-  }, []);
+  }, [location]);
 
   const handleSend = async () => {
     if (!input) return;

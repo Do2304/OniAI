@@ -10,15 +10,18 @@ import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import ProtectedRoutes from './utils/ProtectedRoutes.tsx';
 import Chat from './pages/Chat.tsx';
+import Layout from './layouts/Layout.tsx';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route element={<ProtectedRoutes />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/chat/:conversationId" element={<Chat />} />
-          <Route path="/chat/" element={<Chat />} />
+          <Route element={<Layout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/chat/:conversationId" element={<Chat />} />
+            <Route path="/chat/" element={<Chat />} />
+          </Route>
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Navigate to="/login" />} />
