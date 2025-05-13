@@ -67,9 +67,12 @@ const Home = () => {
         </>
       )}
       <div>
-        <h1>List Conversation:</h1>
+        <h1>
+          <strong>List Conversation:</strong>
+        </h1>
         {listConversationId.map((list, index) => (
           <Button
+            className="m-1"
             onClick={() => handleChooseConversationId(list.id)}
             key={index}
           >
@@ -77,7 +80,7 @@ const Home = () => {
           </Button>
         ))}
       </div>
-      <Button className="mt-2" onClick={handleStartConversation}>
+      <Button className="mt-5" onClick={handleStartConversation}>
         Bắt đầu cuộc trò chuyện mới
       </Button>
     </div>

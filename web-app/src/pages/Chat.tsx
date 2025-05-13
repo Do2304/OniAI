@@ -31,7 +31,7 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input) return;
-    const newMessages = [...messages, { role: 'user', content: input }];
+    const newMessages = [...messages, { role: 'User', content: input }];
     setMessages(newMessages);
     const currentMessagesId = uuidv4();
     const token = localStorage.getItem('token');
@@ -69,7 +69,7 @@ const Chat = () => {
       <div className="max-h-96 border border-gray-300 rounded-lg p-4 overflow-y-auto mb-4">
         {messages.map((msg, index) => (
           <div key={index}>
-            <strong>{msg.role === 'user' ? 'Luli:' : 'Bot:'}</strong>{' '}
+            <strong>{msg.role === 'User' ? 'Luli:' : 'Bot:'}</strong>{' '}
             {msg.content}
           </div>
         ))}
