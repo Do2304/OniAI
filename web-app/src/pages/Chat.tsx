@@ -23,7 +23,6 @@ const Chat = () => {
     const fetchInitialMessages = async () => {
       setMessages([]);
       if (conversationId) {
-        setMessages([]);
         try {
           const historyMessages = await getHistoryConversation(conversationId);
           setMessages(historyMessages.messages);
@@ -72,7 +71,7 @@ const Chat = () => {
         CHAT WITH ONI-AI
       </h1>
       <div>
-        <div>
+        <div className="bg-white shadow-lg rounded-lg p-4">
           <div className="w-200 h-[550px] border border-gray-300 rounded-lg p-4 overflow-y-auto">
             {messages.map((msg, index) => (
               <div
