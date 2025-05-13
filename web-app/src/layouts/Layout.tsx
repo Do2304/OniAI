@@ -14,27 +14,30 @@ import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { IoCreate } from 'react-icons/io5';
+import { useConversation } from '@/utils/ConversationContext';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
   const navigate = useNavigate();
+  const { updateKey } = useConversation();
+
   useEffect(() => {
-    const getListConversation = async () => {
+    const fetchConversations = async () => {
       try {
-        if (listConversationId.length === 0) {
-          const listConversationId = await getListConversationId();
-          setListConversationId(listConversationId.listConversationId);
-        }
+        const { listConversationId } = await getListConversationId();
+        setListConversationId(listConversationId);
       } catch (error) {
-        console.error('Error fetching initial messages:', error);
+        console.error('Error fetching conversations:', error);
       }
     };
-    getListConversation();
-  }, [listConversationId]);
-  const handleChooseConversationId = async (id) => {
+    fetchConversations();
+  }, [updateKey]);
+
+  const handleChooseConversationId = (id) => {
     navigate(`/chat/${id}`);
   };
-  const handleStartConversation = async () => {
+
+  const handleStartConversation = () => {
     navigate(`/chat`);
   };
 
@@ -52,7 +55,6 @@ export default function Layout() {
             />
           </div>
         </SidebarHeader>
-
         <SidebarContent>
           <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -61,7 +63,6 @@ export default function Layout() {
                 <Button
                   className="m-1"
                   onClick={() => handleChooseConversationId(list.id)}
-                  key={index}
                 >
                   {list.id}
                 </Button>
