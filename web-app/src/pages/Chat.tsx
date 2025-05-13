@@ -27,7 +27,7 @@ const Chat = () => {
       }
     };
     fetchInitialMessages();
-  }, [conversationId]);
+  }, []);
 
   const handleSend = async () => {
     if (!input) return;

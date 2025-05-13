@@ -119,3 +119,28 @@ export const getMessagesByConversationId = async (req, res) => {
       .json({ error: 'An error occurred while fetching messages.' })
   }
 }
+
+export const getListConversationId = async (req, res) => {
+  const infoUser = req.user
+  console.log('User ID:', infoUser.id)
+  try {
+    const listConversationId = await prisma.conversation.findMany({
+      where: {
+        user: {
+          id: infoUser.id.toString(),
+        },
+      },
+      select: {
+        id: true,
+      },
+    })
+    console.log('----', listConversationId)
+
+    res.json({ listConversationId })
+  } catch (error) {
+    console.error('Error fetching list conversationId:', error)
+    res
+      .status(500)
+      .json({ error: 'An error occurred while fetching list conversationId.' })
+  }
+}
