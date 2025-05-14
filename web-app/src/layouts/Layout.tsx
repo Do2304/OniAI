@@ -27,6 +27,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ChevronUp, User2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
@@ -58,6 +69,10 @@ export default function Layout() {
 
   const handleTriggerClick = () => {
     setShowSecondTrigger(!showSecondTrigger);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
   };
 
   return (
@@ -101,7 +116,38 @@ export default function Layout() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="top" className="w-full">
                   <DropdownMenuItem className="w-full">
-                    <span className="block text-left w-[200px]">Sign out</span>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <span
+                          className="block text-left w-[200px]"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Sign out
+                        </span>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            {infoUserCurrent} có muốn đăng xuất khỏi App OniAi
+                            không?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Bấm "Yes", bạn sẽ đăng xuất...
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              handleLogout();
+                              navigate('/login');
+                            }}
+                          >
+                            Yes
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
