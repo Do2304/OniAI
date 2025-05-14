@@ -18,6 +18,7 @@ import { useConversation } from '@/utils/ConversationContext';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
+  const [showSecondTrigger, setShowSecondTrigger] = useState(true);
   const navigate = useNavigate();
   const { updateKey } = useConversation();
 
@@ -41,12 +42,16 @@ export default function Layout() {
     navigate(`/chat`);
   };
 
+  const handleTriggerClick = () => {
+    setShowSecondTrigger(!showSecondTrigger);
+  };
+
   return (
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader>
           <div className="flex items-center justify-between space-x-4">
-            <SidebarTrigger />
+            <SidebarTrigger onClick={handleTriggerClick} />
             <strong>App OniAI</strong>
             <IoCreate
               className="cursor-pointer"
@@ -72,6 +77,12 @@ export default function Layout() {
         </SidebarContent>
       </Sidebar>
       <main>
+        {!showSecondTrigger && (
+          <SidebarTrigger
+            onClick={handleTriggerClick}
+            className="absolute left-2 top-4"
+          />
+        )}
         <Outlet />
       </main>
     </SidebarProvider>
