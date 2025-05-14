@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -72,11 +73,11 @@ const Chat = () => {
       </h1>
       <div>
         <div className="bg-white shadow-lg rounded-lg p-4">
-          <div className="w-200 h-[550px] border border-gray-300 rounded-lg p-4 overflow-y-auto">
+          <ScrollToBottom className=" w-200 h-[550px] border border-gray-300 rounded-lg p-4 overflow-y-auto">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`mb-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
+                className={`m-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
               >
                 <strong
                   className={`block ${msg.role === 'User' ? 'text-blue-500' : 'text-gray-700'}`}
@@ -86,7 +87,7 @@ const Chat = () => {
                 <span className="block text-gray-800">{msg.content}</span>
               </div>
             ))}
-          </div>
+          </ScrollToBottom>
           <div className="flex mt-4 ">
             <Input
               type="text"
