@@ -42,6 +42,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { FaEllipsisH } from 'react-icons/fa';
+import { toast } from 'sonner';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
@@ -115,11 +116,13 @@ export default function Layout() {
       console.log(response);
 
       if (response) {
+        toast('Xoá đoạn chat thành công.');
         navigate(`/chat`);
         setReload(!reload);
         console.log('Item deleted successfully');
       }
     } catch (error) {
+      toast.error('Có lỗi xảy ra khi xoá đoạn chat.');
       console.error('Error deleting item:', error);
     }
   };
