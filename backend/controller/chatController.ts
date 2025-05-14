@@ -139,7 +139,7 @@ export const getListConversationId = async (req, res) => {
     })
     console.log('----', listConversationId)
 
-    res.json({ listConversationId })
+    res.json({ listConversationId, infoUser })
   } catch (error) {
     console.error('Error fetching list conversationId:', error)
     res
