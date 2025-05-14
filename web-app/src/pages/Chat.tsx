@@ -103,7 +103,7 @@ const Chat = () => {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              className="h-[70px] mr-2"
+              className="h-[70px] mr-2 font-medium text-xl"
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Hỏi bất kỳ điều gì..."
             />

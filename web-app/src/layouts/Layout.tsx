@@ -133,6 +133,11 @@ export default function Layout() {
                       value={newTitle}
                       onChange={(e) => setNewTitle(e.target.value)}
                       onBlur={() => handleSaveRename(list.id)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSaveRename(list.id);
+                        }
+                      }}
                       className="flex-1 ml-3 border border-gray-300 rounded"
                     />
                   ) : (
