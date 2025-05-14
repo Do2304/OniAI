@@ -1,4 +1,9 @@
-import { SidebarProvider } from '@/components/ui/sidebar';
+import {
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarProvider,
+} from '@/components/ui/sidebar';
 import { getListConversationId } from '@/api/conversationService';
 import {
   Sidebar,
@@ -15,9 +20,17 @@ import { Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { IoCreate } from 'react-icons/io5';
 import { useConversation } from '@/utils/ConversationContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ChevronUp, User2 } from 'lucide-react';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
+  const [infoUserCurrent, setInfoUserCurrent] = useState();
   const [showSecondTrigger, setShowSecondTrigger] = useState(true);
   const navigate = useNavigate();
   const { updateKey } = useConversation();
@@ -25,8 +38,9 @@ export default function Layout() {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const { listConversationId } = await getListConversationId();
+        const { listConversationId, infoUser } = await getListConversationId();
         setListConversationId(listConversationId);
+        setInfoUserCurrent(infoUser.name);
       } catch (error) {
         console.error('Error fetching conversations:', error);
       }
@@ -60,7 +74,7 @@ export default function Layout() {
             />
           </div>
         </SidebarHeader>
-        <SidebarContent>
+        <SidebarContent className="overflow-hidden">
           <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
           <SidebarGroupContent>
             {listConversationId.map((list, index) => (
@@ -75,12 +89,31 @@ export default function Layout() {
             ))}
           </SidebarGroupContent>
         </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton>
+                    <User2 /> {infoUserCurrent}
+                    <ChevronUp className="ml-auto" />
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" className="w-full">
+                  <DropdownMenuItem className="w-full">
+                    <span className="block text-left w-[200px]">Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
       </Sidebar>
       <main>
         {!showSecondTrigger && (
           <SidebarTrigger
             onClick={handleTriggerClick}
-            className="absolute left-2 top-4"
+            className="absolute left-2 top-8"
           />
         )}
         <Outlet />

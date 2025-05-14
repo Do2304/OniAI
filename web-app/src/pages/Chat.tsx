@@ -68,7 +68,7 @@ const Chat = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold mb-4 text-blue-600">
+      <h1 className="text-3xl font-bold mb-4 mt-4 text-blue-600">
         CHAT WITH ONI-AI
       </h1>
       <div>
