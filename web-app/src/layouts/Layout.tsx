@@ -5,6 +5,7 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import {
+  deleteConservation,
   getListConversationId,
   renameTittleConversation,
 } from '@/api/conversationService';
@@ -48,6 +49,7 @@ export default function Layout() {
   const [showSecondTrigger, setShowSecondTrigger] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [newTitle, setNewTitle] = useState('');
+  const [reload, setReload] = useState(false);
   const navigate = useNavigate();
   const { updateKey } = useConversation();
 
@@ -58,12 +60,13 @@ export default function Layout() {
         setListConversationId(listConversationId);
         setNewTitle(listConversationId.title);
         setInfoUserCurrent(infoUser.name);
+        setReload(false);
       } catch (error) {
         console.error('Error fetching conversations:', error);
       }
     };
     fetchConversations();
-  }, [updateKey]);
+  }, [updateKey, reload]);
 
   const handleChooseConversationId = (id) => {
     navigate(`/chat/${id}`);
@@ -104,6 +107,20 @@ export default function Layout() {
         setEditingId(null);
         setNewTitle('');
       }
+    }
+  };
+  const handleDelete = async (id) => {
+    try {
+      const response = await deleteConservation(id);
+      console.log(response);
+
+      if (response) {
+        navigate(`/chat`);
+        setReload(!reload);
+        console.log('Item deleted successfully');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
     }
   };
 
@@ -162,7 +179,9 @@ export default function Layout() {
                       >
                         Rename
                       </DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDelete(list.id)}>
+                        Delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
