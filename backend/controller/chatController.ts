@@ -148,3 +148,28 @@ export const getListConversationId = async (req, res) => {
       .json({ error: 'An error occurred while fetching list conversationId.' })
   }
 }
+
+export const renameConversation = async (req, res) => {
+  const { id, newTitle } = req.body
+  console.log('id', id, newTitle)
+
+  try {
+    const getConversationId = await prisma.conversation.findUnique({
+      where: { id: id },
+    })
+    if (!getConversationId) {
+      return res.status(404).json({ error: 'Conversation not found' })
+    }
+    const updatedConversation = await prisma.conversation.update({
+      where: { id: id },
+      data: { title: newTitle },
+    })
+
+    res.json(updatedConversation)
+  } catch (error) {
+    console.error('Error updating conversation title:', error)
+    res.status(500).json({
+      error: 'An error occurred while updating the conversation title.',
+    })
+  }
+}

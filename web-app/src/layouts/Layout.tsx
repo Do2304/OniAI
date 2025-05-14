@@ -4,7 +4,10 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import { getListConversationId } from '@/api/conversationService';
+import {
+  getListConversationId,
+  renameTittleConversation,
+} from '@/api/conversationService';
 import {
   Sidebar,
   SidebarContent,
@@ -37,13 +40,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
 import { FaEllipsisH } from 'react-icons/fa';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
   const [infoUserCurrent, setInfoUserCurrent] = useState();
   const [showSecondTrigger, setShowSecondTrigger] = useState(true);
+  const [editingId, setEditingId] = useState(null);
+  const [newTitle, setNewTitle] = useState('');
   const navigate = useNavigate();
   const { updateKey } = useConversation();
 
@@ -52,6 +56,7 @@ export default function Layout() {
       try {
         const { listConversationId, infoUser } = await getListConversationId();
         setListConversationId(listConversationId);
+        setNewTitle(listConversationId.title);
         setInfoUserCurrent(infoUser.name);
       } catch (error) {
         console.error('Error fetching conversations:', error);
@@ -76,6 +81,32 @@ export default function Layout() {
     localStorage.removeItem('token');
   };
 
+  const handleRenameConversation = async (id, title) => {
+    setEditingId(id);
+    setNewTitle(title);
+  };
+
+  const handleSaveRename = async (id) => {
+    if (newTitle) {
+      try {
+        const res = await renameTittleConversation(id, newTitle);
+        if (res) {
+          const updatedList = listConversationId.map((item) =>
+            item.id === id ? { ...item, title: newTitle } : item,
+          );
+          setListConversationId(updatedList);
+        } else {
+          console.error('Failed to rename conversation');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setEditingId(null);
+        setNewTitle('');
+      }
+    }
+  };
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -95,14 +126,41 @@ export default function Layout() {
           <SidebarGroupContent>
             {listConversationId.map((list, index) => (
               <SidebarMenuButton className="w-[240px] m-2" key={index} asChild>
-                <Badge
-                  variant="outline"
-                  className=" bg-gray-100 flex justify-start items-center"
-                  onClick={() => handleChooseConversationId(list.id)}
-                >
-                  <div className="flex-1 ml-3">{list.title}</div>
-                  <FaEllipsisH />
-                </Badge>
+                <div className="flex items-center">
+                  {editingId === list.id ? (
+                    <input
+                      type="text"
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      onBlur={() => handleSaveRename(list.id)}
+                      className="flex-1 ml-3 border border-gray-300 rounded"
+                    />
+                  ) : (
+                    <span
+                      className="flex-1 ml-3"
+                      onClick={() => handleChooseConversationId(list.id)}
+                    >
+                      {list.title}
+                    </span>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="cursor-pointer">
+                        <FaEllipsisH />
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          handleRenameConversation(list.id, list.title)
+                        }
+                      >
+                        Rename
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </SidebarMenuButton>
             ))}
           </SidebarGroupContent>
