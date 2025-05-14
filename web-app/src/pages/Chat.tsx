@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
 import ScrollToBottom from 'react-scroll-to-bottom';
+import { Badge } from '@/components/ui/badge';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -84,7 +85,16 @@ const Chat = () => {
                 >
                   {msg.role === 'User' ? 'Luli:' : 'Bot:'}
                 </strong>
-                <span className="block text-gray-800">{msg.content}</span>
+                <Badge
+                  variant="outline"
+                  className={`text-base p-2 ${msg.role === 'User' ? 'bg-blue-500' : 'bg-gray-100'} whitespace-normal`}
+                >
+                  <span
+                    className={`block ${msg.role === 'User' ? 'text-white' : 'text-gray-800'} `}
+                  >
+                    {msg.content}
+                  </span>
+                </Badge>
               </div>
             ))}
           </ScrollToBottom>

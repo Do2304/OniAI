@@ -159,7 +159,7 @@ export default function Layout() {
         {!showSecondTrigger && (
           <SidebarTrigger
             onClick={handleTriggerClick}
-            className="absolute left-2 top-8"
+            className="absolute left-2 top-4"
           />
         )}
         <Outlet />
