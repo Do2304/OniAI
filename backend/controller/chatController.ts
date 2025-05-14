@@ -23,7 +23,7 @@ export const chatUser = async (req, res) => {
       await prisma.conversation.create({
         data: {
           id: conversationId,
-          title: '',
+          title: 'New Chat',
           user: {
             connect: { id: userId },
           },
@@ -134,6 +134,7 @@ export const getListConversationId = async (req, res) => {
         createdAt: 'desc',
       },
       select: {
+        title: true,
         id: true,
       },
     })

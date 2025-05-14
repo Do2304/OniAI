@@ -17,7 +17,6 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { IoCreate } from 'react-icons/io5';
 import { useConversation } from '@/utils/ConversationContext';
 import {
@@ -38,6 +37,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { FaEllipsisH } from 'react-icons/fa';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
@@ -93,13 +94,15 @@ export default function Layout() {
           <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
           <SidebarGroupContent>
             {listConversationId.map((list, index) => (
-              <SidebarMenuButton key={index} asChild>
-                <Button
-                  className="m-1"
+              <SidebarMenuButton className="w-[240px] m-2" key={index} asChild>
+                <Badge
+                  variant="outline"
+                  className=" bg-gray-100 flex justify-start items-center"
                   onClick={() => handleChooseConversationId(list.id)}
                 >
-                  {list.id}
-                </Button>
+                  <div className="flex-1 ml-3">{list.title}</div>
+                  <FaEllipsisH />
+                </Badge>
               </SidebarMenuButton>
             ))}
           </SidebarGroupContent>
