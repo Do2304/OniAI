@@ -78,11 +78,14 @@ export default function Layout() {
           const updatedList = listConversationId.map((item) =>
             item.id === id ? { ...item, title: newTitle } : item,
           );
+          toast('Đổi tên thành công.');
           setListConversationId(updatedList);
         } else {
+          toast.error('Có lỗi xảy ra khi đổi tên đoạn chat.');
           console.error('Failed to rename conversation');
         }
       } catch (error) {
+        toast.error('Có lỗi xảy ra khi đổi tên đoạn chat.');
         console.error('Error:', error);
       } finally {
         setEditingId('');
