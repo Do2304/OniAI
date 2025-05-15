@@ -38,18 +38,32 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <h1>Đây là Trang Chính sau khi bạn đăng nhập!</h1>
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error fetching users: {error.message}</p>}
+    <div className="min-h-screen flex flex-col items-center justify-start p-6">
+      <h1 className="text-3xl font-bold text-center text-black mb-4">
+        Chào mừng bạn đến với Trang Chính!
+      </h1>
+      {isLoading && (
+        <p className="text-lg text-gray-500">
+          Đang tải thông tin, xin vui lòng chờ...
+        </p>
+      )}
+      {error && (
+        <p className="text-lg text-red-500">Có lỗi xảy ra: {error.message}</p>
+      )}
       {infoUser && (
-        <>
-          <h1>InfoUser: {infoUser.name}</h1>
-          <h1>Email: {infoUser.email}</h1>
-        </>
+        <div className="bg-white shadow-md rounded-lg p-5 mt-5 w-full max-w-md">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Thông tin người dùng:
+          </h2>
+          <p className="text-lg text-gray-700">Tên: {infoUser.name}</p>
+          <p className="text-lg text-gray-700">Email: {infoUser.email}</p>
+        </div>
       )}
 
-      <Button className="mt-5" onClick={handleStartConversation}>
+      <Button
+        className="mt-8 bg-black text-white hover:bg-gray-500 transition duration-300 py-2 px-4 rounded cursor-pointer"
+        onClick={handleStartConversation}
+      >
         Bắt đầu cuộc trò chuyện mới
       </Button>
     </div>
