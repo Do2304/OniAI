@@ -1,4 +1,10 @@
 import { SidebarHeader, SidebarTrigger } from '@/components/ui/sidebar';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { IoCreate } from 'react-icons/io5';
 
 interface SidebarHeaderProps {
@@ -13,13 +19,31 @@ const SidebarHeaderLayout = ({
   return (
     <SidebarHeader>
       <div className="flex items-center justify-between space-x-4">
-        <SidebarTrigger onClick={handleTriggerClick} />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <SidebarTrigger onClick={handleTriggerClick} />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Đóng Sidebar</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <strong>App OniAI</strong>
-        <IoCreate
-          className="cursor-pointer"
-          onClick={handleStartConversation}
-          size={24}
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <IoCreate
+                className="cursor-pointer"
+                onClick={handleStartConversation}
+                size={24}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Tạo đoạn chat mới</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </SidebarHeader>
   );
