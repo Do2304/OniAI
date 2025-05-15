@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { FaEllipsisH } from 'react-icons/fa';
 import { toast } from 'sonner';
+import SidebarHeaderLayout from './SidebarHeaderLayout';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
@@ -130,17 +131,10 @@ export default function Layout() {
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center justify-between space-x-4">
-            <SidebarTrigger onClick={handleTriggerClick} />
-            <strong>App OniAI</strong>
-            <IoCreate
-              className="cursor-pointer"
-              onClick={handleStartConversation}
-              size={24}
-            />
-          </div>
-        </SidebarHeader>
+        <SidebarHeaderLayout
+          handleTriggerClick={handleTriggerClick}
+          handleStartConversation={handleStartConversation}
+        />
         <SidebarContent className="overflow-hidden">
           <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
           <SidebarGroupContent>
