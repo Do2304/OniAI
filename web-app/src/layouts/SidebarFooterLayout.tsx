@@ -42,19 +42,14 @@ const SidebarFooterLayout = ({
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton>
                 <User2 /> {infoUserCurrent}
-                <ChevronUp className="ml-auto" />
+                <ChevronUp />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" className="w-full">
-              <DropdownMenuItem className="w-full">
+            <DropdownMenuContent side="top">
+              <DropdownMenuItem>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <span
-                      className="block text-left w-[200px]"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Sign out
-                    </span>
+                    <span onClick={(e) => e.stopPropagation()}>Sign out</span>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>

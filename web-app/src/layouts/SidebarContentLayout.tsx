@@ -6,12 +6,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import {
   SidebarContent,
-  SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarGroup,
+  SidebarMenu,
   SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar';
-import { useEffect, useRef, useState } from 'react';
-import { FaEllipsisH } from 'react-icons/fa';
+import { MoreHorizontal } from 'lucide-react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
 interface SidebarContentProps {
@@ -36,9 +38,10 @@ const SidebarContentLayout = ({
   handleDelete,
 }: SidebarContentProps) => {
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const [focusedId, setFocusedId] = useState<string | null>(null);
+  // const [focusedId, setFocusedId] = useState<string | null>(null);
   const location = useLocation();
   const reloadLocation = location.pathname.replace('/chat/', '');
+  const { isMobile } = useSidebar();
 
   useEffect(() => {
     if (editingId) {
@@ -50,68 +53,71 @@ const SidebarContentLayout = ({
 
   const handleFocusConversation = (id: string) => {
     inputRefs.current[id]?.focus();
-    setFocusedId(id);
+    // setFocusedId(id);
   };
 
   return (
-    <SidebarContent className="overflow-hidden">
-      <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
-      <SidebarGroupContent>
-        {listConversationId.map((list, index) => (
-          <SidebarMenuButton
-            className={`w-[240px] m-2 hover:bg-gray-400 ${focusedId === list.id ? 'bg-gray-400' : ''}`}
-            key={index}
-            asChild
-          >
-            <div className={`flex items-center bg-gray-200`}>
-              {editingId === list.id ? (
-                <input
-                  type="text"
-                  value={newTitle}
-                  ref={(el) => (inputRefs.current[list.id] = el)}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  onBlur={() => handleSaveRename(list.id)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSaveRename(list.id);
-                    }
-                  }}
-                  className="flex-1 ml-3 border border-gray-300 rounded"
-                />
-              ) : (
-                <span
-                  className="flex-1 ml-3"
-                  onClick={() => {
-                    handleChooseConversationId(list.id);
-                    handleFocusConversation(list.id);
-                  }}
-                >
-                  {list.title}
-                </span>
-              )}
-              <DropdownMenu>
+    <SidebarContent>
+      <SidebarGroup>
+        <SidebarMenu>
+          {listConversationId.map((item) => (
+            <DropdownMenu key={item.id}>
+              <SidebarMenuItem>
                 <DropdownMenuTrigger asChild>
-                  <div className="cursor-pointer">
-                    <FaEllipsisH />
-                  </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={() =>
-                      handleRenameConversation(list.id, list.title)
-                    }
+                  <SidebarMenuButton
+                    className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground`}
                   >
-                    Rename
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleDelete(list.id)}>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </SidebarMenuButton>
-        ))}
-      </SidebarGroupContent>
+                    {editingId === item.id ? (
+                      <input
+                        type="text"
+                        value={newTitle}
+                        // ref={(el) => (inputRefs.current[item.id] = el)}
+                        onChange={(e) => setNewTitle(e.target.value)}
+                        onBlur={() => handleSaveRename(item.id)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleSaveRename(item.id);
+                          }
+                        }}
+                      />
+                    ) : (
+                      <span
+                        onClick={() => {
+                          handleChooseConversationId(item.id);
+                          handleFocusConversation(item.id);
+                        }}
+                      >
+                        {item.title}
+                      </span>
+                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <MoreHorizontal className="ml-auto" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        side={isMobile ? 'bottom' : 'right'}
+                        align={isMobile ? 'end' : 'start'}
+                        className="min-w-56 rounded-lg"
+                      >
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleRenameConversation(item.id, item.title)
+                          }
+                        >
+                          Rename
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(item.id)}>
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+              </SidebarMenuItem>
+            </DropdownMenu>
+          ))}
+        </SidebarMenu>
+      </SidebarGroup>
     </SidebarContent>
   );
 };

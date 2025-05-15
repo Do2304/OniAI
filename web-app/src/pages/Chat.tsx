@@ -73,8 +73,8 @@ const Chat = () => {
         CHAT WITH ONI-AI
       </h1>
       <div>
-        <div className="bg-white shadow-lg rounded-lg p-4">
-          <ScrollToBottom className=" w-200 h-[550px] border border-gray-300 rounded-lg p-4 overflow-y-auto">
+        <div>
+          <ScrollToBottom>
             {messages.map((msg, index) => (
               <div
                 key={index}

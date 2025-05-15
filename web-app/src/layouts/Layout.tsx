@@ -1,8 +1,4 @@
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarRail } from '@/components/ui/sidebar';
 import {
   deleteConservation,
   getListConversationId,
@@ -131,14 +127,9 @@ export default function Layout() {
           infoUserCurrent={infoUserCurrent}
           handleLogout={handleLogout}
         />
+        <SidebarRail />
       </Sidebar>
       <main>
-        {!showSecondTrigger && (
-          <SidebarTrigger
-            onClick={handleTriggerClick}
-            className="absolute left-2 top-4"
-          />
-        )}
         <Outlet />
       </main>
     </SidebarProvider>

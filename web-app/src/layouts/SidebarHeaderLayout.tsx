@@ -1,10 +1,16 @@
-import { SidebarHeader, SidebarTrigger } from '@/components/ui/sidebar';
+import {
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { GalleryVerticalEnd } from 'lucide-react';
 import { IoCreate } from 'react-icons/io5';
 
 interface SidebarHeaderProps {
@@ -13,38 +19,41 @@ interface SidebarHeaderProps {
 }
 
 const SidebarHeaderLayout = ({
-  handleTriggerClick,
   handleStartConversation,
 }: SidebarHeaderProps) => {
   return (
     <SidebarHeader>
-      <div className="flex items-center justify-between space-x-4">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <SidebarTrigger onClick={handleTriggerClick} />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Đóng Sidebar</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <strong>App OniAI</strong>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <IoCreate
-                className="cursor-pointer"
-                onClick={handleStartConversation}
-                size={24}
-              />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Tạo đoạn chat mới</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" asChild>
+            <a href="#">
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <GalleryVerticalEnd className="size-4" />
+              </div>
+              <div className="flex flex-col gap-0.5 leading-none">
+                <span className="font-semibold">App OniAI</span>
+                <span className="">v1.0.0</span>
+              </div>
+              <div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <IoCreate
+                        className="cursor-pointer"
+                        onClick={handleStartConversation}
+                        size={32}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Tạo đoạn chat mới</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
     </SidebarHeader>
   );
 };
