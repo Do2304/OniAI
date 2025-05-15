@@ -10,7 +10,9 @@ import {
   SidebarGroupLabel,
   SidebarMenuButton,
 } from '@/components/ui/sidebar';
+import { useEffect, useRef, useState } from 'react';
 import { FaEllipsisH } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 
 interface SidebarContentProps {
   listConversationId: Array<{ id: string; title: string }>;
@@ -33,17 +35,40 @@ const SidebarContentLayout = ({
   handleRenameConversation,
   handleDelete,
 }: SidebarContentProps) => {
+  const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+  const location = useLocation();
+  const reloadLocation = location.pathname.replace('/chat/', '');
+
+  useEffect(() => {
+    if (editingId) {
+      handleFocusConversation(editingId);
+    } else {
+      handleFocusConversation(reloadLocation);
+    }
+  }, [listConversationId, editingId, reloadLocation]);
+
+  const handleFocusConversation = (id: string) => {
+    inputRefs.current[id]?.focus();
+    setFocusedId(id);
+  };
+
   return (
     <SidebarContent className="overflow-hidden">
       <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
       <SidebarGroupContent>
         {listConversationId.map((list, index) => (
-          <SidebarMenuButton className="w-[240px] m-2" key={index} asChild>
-            <div className="flex items-center">
+          <SidebarMenuButton
+            className={`w-[240px] m-2 hover:bg-gray-400 ${focusedId === list.id ? 'bg-gray-400' : ''}`}
+            key={index}
+            asChild
+          >
+            <div className={`flex items-center bg-gray-200`}>
               {editingId === list.id ? (
                 <input
                   type="text"
                   value={newTitle}
+                  ref={(el) => (inputRefs.current[list.id] = el)}
                   onChange={(e) => setNewTitle(e.target.value)}
                   onBlur={() => handleSaveRename(list.id)}
                   onKeyPress={(e) => {
@@ -56,7 +81,10 @@ const SidebarContentLayout = ({
               ) : (
                 <span
                   className="flex-1 ml-3"
-                  onClick={() => handleChooseConversationId(list.id)}
+                  onClick={() => {
+                    handleChooseConversationId(list.id);
+                    handleFocusConversation(list.id);
+                  }}
                 >
                   {list.title}
                 </span>

@@ -10,7 +10,7 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 import { Badge } from '@/components/ui/badge';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'User' | 'assistant';
   content: string;
 }
 
