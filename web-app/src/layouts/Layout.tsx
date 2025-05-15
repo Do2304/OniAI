@@ -11,17 +11,12 @@ import {
 } from '@/api/conversationService';
 import {
   Sidebar,
-  SidebarContent,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenuButton,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-import { IoCreate } from 'react-icons/io5';
 import { useConversation } from '@/utils/ConversationContext';
 import {
   DropdownMenu,
@@ -41,9 +36,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { FaEllipsisH } from 'react-icons/fa';
 import { toast } from 'sonner';
 import SidebarHeaderLayout from './SidebarHeaderLayout';
+import SidebarContentLayout from './SidebarContentLayout';
 
 export default function Layout() {
   const [listConversationId, setListConversationId] = useState([]);
@@ -135,57 +130,16 @@ export default function Layout() {
           handleTriggerClick={handleTriggerClick}
           handleStartConversation={handleStartConversation}
         />
-        <SidebarContent className="overflow-hidden">
-          <SidebarGroupLabel>Các conversation:</SidebarGroupLabel>
-          <SidebarGroupContent>
-            {listConversationId.map((list, index) => (
-              <SidebarMenuButton className="w-[240px] m-2" key={index} asChild>
-                <div className="flex items-center">
-                  {editingId === list.id ? (
-                    <input
-                      type="text"
-                      value={newTitle}
-                      onChange={(e) => setNewTitle(e.target.value)}
-                      onBlur={() => handleSaveRename(list.id)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleSaveRename(list.id);
-                        }
-                      }}
-                      className="flex-1 ml-3 border border-gray-300 rounded"
-                    />
-                  ) : (
-                    <span
-                      className="flex-1 ml-3"
-                      onClick={() => handleChooseConversationId(list.id)}
-                    >
-                      {list.title}
-                    </span>
-                  )}
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <div className="cursor-pointer">
-                        <FaEllipsisH />
-                      </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          handleRenameConversation(list.id, list.title)
-                        }
-                      >
-                        Rename
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDelete(list.id)}>
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </SidebarMenuButton>
-            ))}
-          </SidebarGroupContent>
-        </SidebarContent>
+        <SidebarContentLayout
+          listConversationId={listConversationId}
+          editingId={editingId}
+          newTitle={newTitle}
+          setNewTitle={setNewTitle}
+          handleSaveRename={handleSaveRename}
+          handleChooseConversationId={handleChooseConversationId}
+          handleRenameConversation={handleRenameConversation}
+          handleDelete={handleDelete}
+        />
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
