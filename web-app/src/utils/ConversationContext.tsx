@@ -1,6 +1,11 @@
 import { createContext, useContext, useState } from 'react';
 
-const ConversationContext = createContext(null);
+interface ConversationContextType {
+  updateKey: number;
+  triggerUpdate: () => void;
+}
+
+const ConversationContext = createContext<ConversationContextType | null>(null);
 
 export const useConversation = () => {
   return useContext(ConversationContext);

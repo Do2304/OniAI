@@ -1,50 +1,34 @@
 import {
-  SidebarFooter,
-  SidebarMenu,
-  SidebarMenuItem,
   SidebarProvider,
+  Sidebar,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import {
   deleteConservation,
   getListConversationId,
   renameTittleConversation,
 } from '@/api/conversationService';
-import {
-  Sidebar,
-  SidebarMenuButton,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import { useConversation } from '@/utils/ConversationContext';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ChevronUp, User2 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import SidebarHeaderLayout from './SidebarHeaderLayout';
 import SidebarContentLayout from './SidebarContentLayout';
+import SidebarFooterLayout from './SidebarFooterLayout';
+
+interface Conversation {
+  id: string;
+  title: string;
+}
 
 export default function Layout() {
-  const [listConversationId, setListConversationId] = useState([]);
-  const [infoUserCurrent, setInfoUserCurrent] = useState();
+  const [listConversationId, setListConversationId] = useState<Conversation[]>(
+    [],
+  );
+  const [infoUserCurrent, setInfoUserCurrent] = useState<string>('');
   const [showSecondTrigger, setShowSecondTrigger] = useState(true);
-  const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState<string>('');
   const [newTitle, setNewTitle] = useState('');
   const [reload, setReload] = useState(false);
   const navigate = useNavigate();
@@ -65,7 +49,7 @@ export default function Layout() {
     fetchConversations();
   }, [updateKey, reload]);
 
-  const handleChooseConversationId = (id) => {
+  const handleChooseConversationId = (id: string) => {
     navigate(`/chat/${id}`);
   };
 
@@ -81,12 +65,12 @@ export default function Layout() {
     localStorage.removeItem('token');
   };
 
-  const handleRenameConversation = async (id, title) => {
+  const handleRenameConversation = async (id: string, title: string) => {
     setEditingId(id);
     setNewTitle(title);
   };
 
-  const handleSaveRename = async (id) => {
+  const handleSaveRename = async (id: string) => {
     if (newTitle) {
       try {
         const res = await renameTittleConversation(id, newTitle);
@@ -101,12 +85,12 @@ export default function Layout() {
       } catch (error) {
         console.error('Error:', error);
       } finally {
-        setEditingId(null);
+        setEditingId('');
         setNewTitle('');
       }
     }
   };
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       const response = await deleteConservation(id);
       console.log(response);
@@ -140,56 +124,10 @@ export default function Layout() {
           handleRenameConversation={handleRenameConversation}
           handleDelete={handleDelete}
         />
-        <SidebarFooter>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
-                    <User2 /> {infoUserCurrent}
-                    <ChevronUp className="ml-auto" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" className="w-full">
-                  <DropdownMenuItem className="w-full">
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <span
-                          className="block text-left w-[200px]"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Sign out
-                        </span>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {infoUserCurrent} có muốn đăng xuất khỏi App OniAi
-                            không?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Bấm "Yes", bạn sẽ đăng xuất...
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => {
-                              handleLogout();
-                              navigate('/login');
-                            }}
-                          >
-                            Yes
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
+        <SidebarFooterLayout
+          infoUserCurrent={infoUserCurrent}
+          handleLogout={handleLogout}
+        />
       </Sidebar>
       <main>
         {!showSecondTrigger && (
