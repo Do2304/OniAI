@@ -40,12 +40,15 @@ const SidebarFooterLayout = ({
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton>
-                <User2 /> {infoUserCurrent}
+              <SidebarMenuButton className="flex items-center justify-start">
+                <div className="flex flex-1 items-end justify-start">
+                  <User2 />{' '}
+                  <span className="ml-2 text-base">{infoUserCurrent}</span>
+                </div>
                 <ChevronUp />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="top">
+            <DropdownMenuContent className="min-w-56 rounded-lg" side="top">
               <DropdownMenuItem>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -54,11 +57,11 @@ const SidebarFooterLayout = ({
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {infoUserCurrent} có muốn đăng xuất khỏi App OniAi
-                        không?
+                        {infoUserCurrent} - Do you want to log out of Oni-AI
+                        App?
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        Bấm "Yes", bạn sẽ đăng xuất...
+                        Click "Yes", You will be log out...
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
