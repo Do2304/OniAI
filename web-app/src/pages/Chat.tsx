@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
-import ScrollToBottom from 'react-scroll-to-bottom';
 import { Badge } from '@/components/ui/badge';
 
 interface Message {
@@ -20,6 +18,11 @@ const Chat = () => {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     const fetchInitialMessages = async () => {
@@ -68,52 +71,41 @@ const Chat = () => {
   };
 
   return (
-    <>
-      <h1 className="text-3xl font-bold mb-4 mt-4 text-blue-600">
+    <div className="flex flex-col items-center justify-start">
+      <h1 className="text-center text-3xl font-bold mb-4 mt-4 w-3/4">
         CHAT WITH ONI-AI
       </h1>
-      <div>
+      <div className="w-3/4 mt-10 mx-auto flex flex-col">
         <div>
-          <ScrollToBottom>
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`m-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`mb-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
+            >
+              <Badge
+                variant="outline"
+                className={`text-base p-2 ${msg.role === 'User' ? 'bg-gray-100' : 'bg-gray-300'} whitespace-normal`}
               >
-                <strong
-                  className={`block ${msg.role === 'User' ? 'text-blue-500' : 'text-gray-700'}`}
+                <span
+                  className={`block ${msg.role === 'User' ? 'text-gray-800' : 'text-gray-800'}`}
                 >
-                  {msg.role === 'User' ? 'Luli:' : 'Bot:'}
-                </strong>
-                <Badge
-                  variant="outline"
-                  className={`text-base p-2 ${msg.role === 'User' ? 'bg-blue-500' : 'bg-gray-100'} whitespace-normal`}
-                >
-                  <span
-                    className={`block ${msg.role === 'User' ? 'text-white' : 'text-gray-800'} `}
-                  >
-                    {msg.content}
-                  </span>
-                </Badge>
-              </div>
-            ))}
-          </ScrollToBottom>
-          <div className="flex mt-4 ">
-            <Input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="h-[70px] mr-2 font-medium text-xl"
-              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Hỏi bất kỳ điều gì..."
-            />
-            <Button className="h-[70px]" onClick={handleSend}>
-              Gửi
-            </Button>
-          </div>
+                  {msg.content}
+                </span>
+              </Badge>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
         </div>
+        <Input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="h-[70px] mr-2 mb-8 mt-4 font-medium text-xl w-full "
+          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="Ask anything..."
+        />
       </div>
-    </>
+    </div>
   );
 };
 
