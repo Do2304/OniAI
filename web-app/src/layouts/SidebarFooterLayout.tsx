@@ -1,3 +1,4 @@
+import { getListConversationId } from '@/api/conversationService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,18 +23,30 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { ChevronUp, User2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface SidebarFooterProps {
-  infoUserCurrent: string;
-  handleLogout: () => void;
-}
-
-const SidebarFooterLayout = ({
-  infoUserCurrent,
-  handleLogout,
-}: SidebarFooterProps) => {
+const SidebarFooterLayout = () => {
+  const [infoUserCurrent, setInfoUserCurrent] = useState<string>('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const { infoUser } = await getListConversationId();
+
+        setInfoUserCurrent(infoUser.name);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      }
+    };
+    fetchConversations();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+  };
+
   return (
     <SidebarFooter>
       <SidebarMenu>

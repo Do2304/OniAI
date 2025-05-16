@@ -54,12 +54,12 @@ const Chat = () => {
     if (!conversationId) {
       const response = await conversationUser();
       startConversationId = response.conversationId;
+      triggerUpdate();
       navigate(`/chat/${response.conversationId}`);
     }
 
     const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}`;
     const eventSource = new EventSource(apiChat);
-    triggerUpdate();
     eventSource.onmessage = (event) =>
       processStreamEvent(event, setMessages, currentMessagesId);
 

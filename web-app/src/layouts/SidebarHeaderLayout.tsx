@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 
 const SidebarHeaderLayout = () => {
   const navigate = useNavigate();
+
   const handleStartConversation = () => {
     navigate(`/chat`);
   };
