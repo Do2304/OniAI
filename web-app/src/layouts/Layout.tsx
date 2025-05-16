@@ -1,4 +1,9 @@
-import { SidebarProvider, Sidebar, SidebarRail } from '@/components/ui/sidebar';
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarRail,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 import {
   deleteConservation,
   getListConversationId,
@@ -130,6 +135,7 @@ export default function Layout() {
         <SidebarRail />
       </Sidebar>
       <main>
+        <SidebarTrigger className="ml-1 mt-4 " />
         <Outlet />
       </main>
     </SidebarProvider>
