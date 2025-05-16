@@ -17,6 +17,8 @@ import { toast } from 'sonner';
 import SidebarHeaderLayout from './SidebarHeaderLayout';
 import SidebarContentLayout from './SidebarContentLayout';
 import SidebarFooterLayout from './SidebarFooterLayout';
+import { useTheme } from '@/components/theme-provider';
+import { FaSun, FaMoon } from 'react-icons/fa';
 
 interface Conversation {
   id: string;
@@ -34,6 +36,8 @@ export default function Layout() {
   const [reload, setReload] = useState(false);
   const navigate = useNavigate();
   const { updateKey } = useConversation();
+  const { theme, setTheme } = useTheme();
+  const [darkMode, setDarkMode] = useState('light');
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -111,6 +115,11 @@ export default function Layout() {
     }
   };
 
+  const toggleTheme = () => {
+    const newTheme = darkMode === 'light' ? 'dark' : 'light';
+    setDarkMode(newTheme);
+    setTheme(newTheme);
+  };
   return (
     <SidebarProvider>
       <Sidebar>
@@ -136,6 +145,9 @@ export default function Layout() {
       </Sidebar>
       <main>
         <SidebarTrigger className="ml-1 mt-4 " />
+        <button onClick={toggleTheme}>
+          {darkMode === 'light' ? <FaMoon /> : <FaSun />}{' '}
+        </button>
         <Outlet />
       </main>
     </SidebarProvider>
