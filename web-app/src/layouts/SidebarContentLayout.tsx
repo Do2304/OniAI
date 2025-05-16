@@ -35,6 +35,7 @@ const SidebarContentLayout = () => {
   const [listConversationId, setListConversationId] = useState<Conversation[]>(
     [],
   );
+  const [focusedId, setFocusedId] = useState<string | null>(null);
   const [reload, setReload] = useState(false);
   const location = useLocation();
   const reloadLocation = location.pathname.replace('/chat/', '');
@@ -62,10 +63,11 @@ const SidebarContentLayout = () => {
     } else {
       handleFocusConversation(reloadLocation);
     }
-  }, [listConversationId, editingId, reloadLocation]);
+  }, [editingId, reloadLocation]);
 
   const handleFocusConversation = (id: string) => {
     inputRefs.current[id]?.focus();
+    setFocusedId(id);
   };
 
   const handleChooseConversationId = (id: string) => {
@@ -126,7 +128,7 @@ const SidebarContentLayout = () => {
               <SidebarMenuItem>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton
-                    className={`data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground`}
+                    className={`${focusedId === item.id && ' border border-gray-400'}`}
                   >
                     {editingId === item.id ? (
                       <input
@@ -134,11 +136,9 @@ const SidebarContentLayout = () => {
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
                         onBlur={() => handleSaveRename(item.id)}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            handleSaveRename(item.id);
-                          }
-                        }}
+                        onKeyPress={(e) =>
+                          e.key === 'Enter' && handleSaveRename(item.id)
+                        }
                       />
                     ) : (
                       <span
