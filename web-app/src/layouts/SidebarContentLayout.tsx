@@ -1,4 +1,9 @@
 import {
+  deleteConservation,
+  getListConversationId,
+  renameTittleConversation,
+} from '@/api/conversationService';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,35 +18,43 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { MoreHorizontal } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useConversation } from '@/utils/ConversationContext';
 
-interface SidebarContentProps {
-  listConversationId: Array<{ id: string; title: string }>;
-  editingId: string | null;
-  newTitle: string;
-  setNewTitle: (value: string) => void;
-  handleSaveRename: (id: string) => void;
-  handleChooseConversationId: (id: string) => void;
-  handleRenameConversation: (id: string, title: string) => void;
-  handleDelete: (id: string) => void;
+interface Conversation {
+  id: string;
+  title: string;
 }
 
-const SidebarContentLayout = ({
-  listConversationId,
-  editingId,
-  newTitle,
-  setNewTitle,
-  handleSaveRename,
-  handleChooseConversationId,
-  handleRenameConversation,
-  handleDelete,
-}: SidebarContentProps) => {
+const SidebarContentLayout = () => {
   const inputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  // const [focusedId, setFocusedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string>('');
+  const [newTitle, setNewTitle] = useState('');
+  const [listConversationId, setListConversationId] = useState<Conversation[]>(
+    [],
+  );
+  const [reload, setReload] = useState(false);
   const location = useLocation();
   const reloadLocation = location.pathname.replace('/chat/', '');
   const { isMobile } = useSidebar();
+  const navigate = useNavigate();
+  const { updateKey } = useConversation();
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const { listConversationId } = await getListConversationId();
+        setListConversationId(listConversationId);
+        setNewTitle(listConversationId.title);
+        setReload(false);
+      } catch (error) {
+        console.error('Error fetching conversations:', error);
+      }
+    };
+    fetchConversations();
+  }, [updateKey, reload]);
 
   useEffect(() => {
     if (editingId) {
@@ -53,7 +66,55 @@ const SidebarContentLayout = ({
 
   const handleFocusConversation = (id: string) => {
     inputRefs.current[id]?.focus();
-    // setFocusedId(id);
+  };
+
+  const handleChooseConversationId = (id: string) => {
+    navigate(`/chat/${id}`);
+  };
+
+  const handleRenameConversation = async (id: string, title: string) => {
+    setEditingId(id);
+    setNewTitle(title);
+  };
+
+  const handleSaveRename = async (id: string) => {
+    if (newTitle) {
+      try {
+        const res = await renameTittleConversation(id, newTitle);
+        if (res) {
+          const updatedList = listConversationId.map((item) =>
+            item.id === id ? { ...item, title: newTitle } : item,
+          );
+          toast('Đổi tên thành công.');
+          setListConversationId(updatedList);
+        } else {
+          toast.error('Có lỗi xảy ra khi đổi tên đoạn chat.');
+          console.error('Failed to rename conversation');
+        }
+      } catch (error) {
+        toast.error('Có lỗi xảy ra khi đổi tên đoạn chat.');
+        console.error('Error:', error);
+      } finally {
+        setEditingId('');
+        setNewTitle('');
+      }
+    }
+  };
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await deleteConservation(id);
+      console.log(response);
+
+      if (response) {
+        toast('Xoá đoạn chat thành công.');
+        navigate(`/chat`);
+        setReload(!reload);
+        console.log('Item deleted successfully');
+      }
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi xoá đoạn chat.');
+      console.error('Error deleting item:', error);
+    }
   };
 
   return (
@@ -71,7 +132,6 @@ const SidebarContentLayout = ({
                       <input
                         type="text"
                         value={newTitle}
-                        // ref={(el) => (inputRefs.current[item.id] = el)}
                         onChange={(e) => setNewTitle(e.target.value)}
                         onBlur={() => handleSaveRename(item.id)}
                         onKeyPress={(e) => {
