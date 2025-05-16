@@ -12,15 +12,14 @@ import {
 } from '@/components/ui/tooltip';
 import { GalleryVerticalEnd } from 'lucide-react';
 import { IoCreate } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 
-interface SidebarHeaderProps {
-  handleTriggerClick: () => void;
-  handleStartConversation: () => void;
-}
+const SidebarHeaderLayout = () => {
+  const navigate = useNavigate();
+  const handleStartConversation = () => {
+    navigate(`/chat`);
+  };
 
-const SidebarHeaderLayout = ({
-  handleStartConversation,
-}: SidebarHeaderProps) => {
   return (
     <SidebarHeader>
       <SidebarMenu>
