@@ -39,23 +39,23 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start p-6">
-      <h1 className="text-3xl font-bold text-center text-black mb-4">
-        Chào mừng bạn đến với Trang Chính!
+      <h1 className="text-3xl font-bold text-center mb-4">
+        Welcome to chat Oni-Ai!
       </h1>
       {isLoading && (
-        <p className="text-lg text-gray-500">
-          Đang tải thông tin, xin vui lòng chờ...
-        </p>
+        <p className="text-lg">Loading information, please wait...</p>
       )}
       {error && (
-        <p className="text-lg text-red-500">Có lỗi xảy ra: {error.message}</p>
+        <p className="text-lg text-red-500">
+          An error occurred: {error.message}
+        </p>
       )}
       {infoUser && (
         <div className="bg-white shadow-md rounded-lg p-5 mt-5 w-full max-w-md">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Thông tin người dùng:
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
+            User information:
           </h2>
-          <p className="text-lg text-gray-700">Tên: {infoUser.name}</p>
+          <p className="text-lg text-gray-700">User: {infoUser.name}</p>
           <p className="text-lg text-gray-700">Email: {infoUser.email}</p>
         </div>
       )}

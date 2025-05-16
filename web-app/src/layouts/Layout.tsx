@@ -143,7 +143,7 @@ export default function Layout() {
         />
         <SidebarRail />
       </Sidebar>
-      <main>
+      <main className="w-full">
         <SidebarTrigger className="ml-1 mt-4 " />
         <button onClick={toggleTheme}>
           {darkMode === 'light' ? <FaMoon /> : <FaSun />}{' '}
