@@ -6,6 +6,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
 
 interface Message {
   role: 'User' | 'assistant';
@@ -70,8 +72,6 @@ const Chat = () => {
     setInput('');
   };
 
-  console.log('messs:', messages);
-
   return (
     <>
       <h1 className="text-center text-3xl font-bold w-3/4">CHAT WITH ONI-AI</h1>
@@ -84,7 +84,7 @@ const Chat = () => {
             >
               <Badge
                 variant="outline"
-                className={`text-base  ${msg.role === 'User' && 'bg-gray-100 p-3 pl-6 pr-6 rounded-full'} whitespace-normal border border-none`}
+                className={`text-base ml-2 ${msg.role === 'User' && 'bg-gray-100 p-3 pl-6 pr-6 mr-3 rounded-full'} whitespace-normal border border-none`}
               >
                 <span
                   className={`block ${msg.role === 'User' && 'text-gray-800'}`}
@@ -96,14 +96,54 @@ const Chat = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <Input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="h-[70px] mr-2 mb-8 mt-2  font-medium text-xl w-full bg-transparent border outline-none rounded-full"
-          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          placeholder="Ask anything..."
-        />
+        <div className="relative flex w-full items-end px-3 py-3">
+          <Input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+            className="h-[100px] rounded-4xl"
+            placeholder="Hỏi bất kỳ điều gì..."
+          />
+          <div style={{ height: '48px' }}></div>
+
+          <div className="absolute start-3 end-0 bottom-6 z-2 flex items-center">
+            <div className="w-full flex items-center justify-between">
+              <div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="p-2 ml-4 rounded-full"
+                >
+                  <Plus />
+                </Button>
+                <Button variant="outline" className="p-2 ml-1 rounded-full">
+                  <Globe />
+                  Search
+                </Button>
+                <Button variant="outline" className="p-2 ml-1 rounded-full">
+                  <Siren /> Analysis
+                </Button>
+              </div>
+              <div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="p-2 rounded-full"
+                >
+                  <Mic />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="p-2 mr-8 ml-1 rounded-full"
+                >
+                  <ArrowUp />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

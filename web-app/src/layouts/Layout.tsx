@@ -39,7 +39,7 @@ export default function Layout() {
             {darkMode === 'light' ? <FaMoon /> : <FaSun />}{' '}
           </button>
         </div>
-        <div className="flex-grow flex flex-col items-center justify-center">
+        <div className="flex-grow flex flex-col items-center justify-start">
           <Outlet />
         </div>
       </main>
