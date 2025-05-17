@@ -128,7 +128,11 @@ const SidebarContentLayout = () => {
               <SidebarMenuItem>
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton
-                    className={`${focusedId === item.id && ' border border-gray-400'}`}
+                    onClick={() => {
+                      handleChooseConversationId(item.id);
+                      handleFocusConversation(item.id);
+                    }}
+                    isActive={focusedId === item.id}
                   >
                     {editingId === item.id ? (
                       <input
@@ -141,14 +145,7 @@ const SidebarContentLayout = () => {
                         }
                       />
                     ) : (
-                      <span
-                        onClick={() => {
-                          handleChooseConversationId(item.id);
-                          handleFocusConversation(item.id);
-                        }}
-                      >
-                        {item.title}
-                      </span>
+                      <span>{item.title}</span>
                     )}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
