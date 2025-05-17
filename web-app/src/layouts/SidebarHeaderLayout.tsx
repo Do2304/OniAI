@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   SidebarHeader,
   SidebarMenu,
@@ -10,8 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { GalleryVerticalEnd } from 'lucide-react';
-import { IoCreate } from 'react-icons/io5';
+import { GalleryVerticalEnd, SquarePen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const SidebarHeaderLayout = () => {
@@ -26,7 +26,7 @@ const SidebarHeaderLayout = () => {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton size="lg" asChild>
-            <a href="#" className="flex items-start justify-between">
+            <a href="#" className="flex items-center justify-between">
               <div className="flex flex-row">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <GalleryVerticalEnd className="size-4" />
@@ -40,10 +40,9 @@ const SidebarHeaderLayout = () => {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <IoCreate
+                      <SquarePen
                         className="cursor-pointer"
                         onClick={handleStartConversation}
-                        size={32}
                       />
                     </TooltipTrigger>
                     <TooltipContent>
