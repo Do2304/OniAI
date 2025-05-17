@@ -11,7 +11,6 @@ import SidebarContentLayout from './SidebarContentLayout';
 import SidebarFooterLayout from './SidebarFooterLayout';
 import { useTheme } from '@/components/theme-provider';
 import { FaSun, FaMoon } from 'react-icons/fa';
-import { Button } from '@/components/ui/button';
 
 export default function Layout() {
   const { setTheme } = useTheme();
