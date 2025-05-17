@@ -14,6 +14,7 @@ const Login = () => {
       const responseLoginUser = await loginUser(
         resultLoginWithGoogle.user.email,
         resultLoginWithGoogle.user.displayName,
+        resultLoginWithGoogle.user.photoURL,
       );
       navigate('/home');
       localStorage.setItem('token', responseLoginUser.token);
@@ -26,7 +27,7 @@ const Login = () => {
   return (
     <>
       <div className="flex flex-col items-center justify-center min-h-svh">
-        <Button onClick={loginWithGoogle}>Đăng Nhập Bằng GOOGLE</Button>
+        <Button onClick={loginWithGoogle}>Sign In With GOOGLE</Button>
       </div>
     </>
   );

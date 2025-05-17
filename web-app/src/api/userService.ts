@@ -10,7 +10,15 @@ export const getUserInfo = async (id: number) => {
   return response.data;
 };
 
-export const loginUser = async (email: string, name: string) => {
-  const response = await axiosInstance.post(apiPath.login, { email, name });
+export const loginUser = async (
+  email: string,
+  name: string,
+  photoURL: string,
+) => {
+  const response = await axiosInstance.post(apiPath.login, {
+    email,
+    name,
+    photoURL,
+  });
   return response.data;
 };

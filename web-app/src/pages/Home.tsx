@@ -1,28 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserInfo } from '@/api/userService';
-import { jwtDecode } from 'jwt-decode';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-
-interface TokenPayload {
-  id: number;
-}
+import useUserId from '@/utils/useUserId';
 
 const Home = () => {
-  const token = localStorage.getItem('token');
-  let userId: number | null = null;
+  const userId = useUserId();
   const navigate = useNavigate();
-
-  if (token) {
-    try {
-      const decoded = jwtDecode<TokenPayload>(token);
-      userId = decoded.id;
-    } catch (error) {
-      console.error('Error decoding token:', error);
-    }
-  } else {
-    console.log('No token found');
-  }
 
   const {
     data: infoUser,

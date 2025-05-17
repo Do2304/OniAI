@@ -8,6 +8,7 @@ interface User {
   id: string
   email: string
   name: string
+  photoURL: string
 }
 
 export const getUser = async (userId: string): Promise<User | null> => {
@@ -17,13 +18,14 @@ export const getUser = async (userId: string): Promise<User | null> => {
       id: true,
       email: true,
       name: true,
+      photoURL: true,
     },
   })
 
   return user
 }
 
-export const login = async (email: string, name: string) => {
+export const login = async (email: string, name: string, photoURL: string) => {
   let user = await prisma.user.findUnique({ where: { email } })
 
   if (!user) {
@@ -31,6 +33,7 @@ export const login = async (email: string, name: string) => {
       data: {
         name: name,
         email: email,
+        photoURL: photoURL,
       },
     })
   }

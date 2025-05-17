@@ -13,9 +13,9 @@ export const getUsers = async (req, res) => {
 }
 
 export const loginUser = async (req, res) => {
-  const { email, name } = req.body
+  const { email, name, photoURL } = req.body
   try {
-    const token = await userService.login(email, name) 
+    const token = await userService.login(email, name, photoURL)
     res.json({ token })
   } catch (error) {
     console.error('Error logging in', error)
