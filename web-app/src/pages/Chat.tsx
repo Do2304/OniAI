@@ -73,10 +73,8 @@ const Chat = () => {
   console.log('messs:', messages);
 
   return (
-    <div className="flex flex-col items-center justify-center ">
-      <h1 className="text-center text-3xl font-bold mb-4 mt-4 w-3/4">
-        CHAT WITH ONI-AI
-      </h1>
+    <>
+      <h1 className="text-center text-3xl font-bold w-3/4">CHAT WITH ONI-AI</h1>
       <div className="w-3/5 mt-10 mx-auto flex flex-col">
         <div className={`${messages && 'flex-1'}`}>
           {messages.map((msg, index) => (
@@ -89,7 +87,7 @@ const Chat = () => {
                 className={`text-base  ${msg.role === 'User' && 'bg-gray-100 p-3 pl-6 pr-6 rounded-full'} whitespace-normal border border-none`}
               >
                 <span
-                  className={`block ${msg.role === 'User' ? 'text-gray-800' : 'text-gray-800'}`}
+                  className={`block ${msg.role === 'User' && 'text-gray-800'}`}
                 >
                   {msg.content}
                 </span>
@@ -102,12 +100,12 @@ const Chat = () => {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="h-[70px] mr-2 mb-8 mt-2  font-medium text-xl w-full bg-transparent border outline-none rounded-full "
+          className="h-[70px] mr-2 mb-8 mt-2  font-medium text-xl w-full bg-transparent border outline-none rounded-full"
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
           placeholder="Ask anything..."
         />
       </div>
-    </div>
+    </>
   );
 };
 
