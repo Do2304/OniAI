@@ -1,65 +1,111 @@
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate, useParams } from 'react-router-dom';
+import { conversationUser, getHistoryConversation } from '@/api/chatService';
+import { useConversation } from '@/utils/ConversationContext';
+import { Badge } from '@/components/ui/badge';
 
 interface Message {
-  role: 'user' | 'assistant';
+  role: 'User' | 'assistant';
   content: string;
 }
 
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const { conversationId } = useParams<{ conversationId: string }>();
+  const navigate = useNavigate();
+  const { triggerUpdate } = useConversation();
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    const fetchInitialMessages = async () => {
+      setMessages([]);
+      if (conversationId) {
+        try {
+          const historyMessages = await getHistoryConversation(conversationId);
+          setMessages(historyMessages.messages);
+        } catch (error) {
+          console.error('Error fetching initial messages:', error);
+        }
+      }
+    };
+    fetchInitialMessages();
+  }, [conversationId]);
 
   const handleSend = async () => {
     if (!input) return;
 
-    const newMessages = [...messages, { role: 'user', content: input }];
+    const newMessages = [...messages, { role: 'User', content: input }];
     setMessages(newMessages);
     const currentMessagesId = uuidv4();
+    const token = localStorage.getItem('token');
+    const decoded = JSON.parse(atob(token.split('.')[1]));
+    const userInfo = decoded.id;
 
-    const query = encodeURIComponent(JSON.stringify(newMessages));
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}`;
+    const query = encodeURIComponent(JSON.stringify(input));
+    let startConversationId;
+    if (!conversationId) {
+      const response = await conversationUser();
+      startConversationId = response.conversationId;
+      triggerUpdate();
+      navigate(`/chat/${response.conversationId}`);
+    }
+
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}`;
     const eventSource = new EventSource(apiChat);
-
     eventSource.onmessage = (event) =>
       processStreamEvent(event, setMessages, currentMessagesId);
 
-    eventSource.onerror = (error) => {
-      console.error('Error occurred:', error);
+    eventSource.onerror = () => {
       eventSource.close();
     };
 
     setInput('');
   };
-  console.log('mess:', messages);
+
+  console.log('messs:', messages);
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <strong className="pb-2.5">CHAT WITH ONI-AI</strong>
-      <div className="max-h-96 border border-gray-300 rounded-lg p-4 overflow-y-auto mb-4">
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.role === 'user' ? 'Luli:' : 'Bot:'}</strong>{' '}
-            {msg.content}
-            {/* {msg.role === 'assistant' ? assistantResponse : msg.content} */}
-          </div>
-        ))}
-      </div>
-      <div className="flex">
+    <>
+      <h1 className="text-center text-3xl font-bold w-3/4">CHAT WITH ONI-AI</h1>
+      <div className="w-3/5 mt-10 mx-auto flex flex-col">
+        <div className={`${messages && 'flex-1'}`}>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`mb-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
+            >
+              <Badge
+                variant="outline"
+                className={`text-base  ${msg.role === 'User' && 'bg-gray-100 p-3 pl-6 pr-6 rounded-full'} whitespace-normal border border-none`}
+              >
+                <span
+                  className={`block ${msg.role === 'User' && 'text-gray-800'}`}
+                >
+                  {msg.content}
+                </span>
+              </Badge>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
         <Input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          className="h-[70px] mr-2 mb-8 mt-2  font-medium text-xl w-full bg-transparent border outline-none rounded-full"
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-          className="flex-grow mr-2"
-          placeholder="Nhập tin nhắn..."
+          placeholder="Ask anything..."
         />
-        <Button onClick={handleSend}>Gửi</Button>
       </div>
-    </div>
+    </>
   );
 };
 
