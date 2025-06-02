@@ -12,9 +12,9 @@ const Login = () => {
       const resultLoginWithGoogle = await signInWithPopup(auth, provider);
       //   setUser(resultLoginWithGoogle.user);
       const responseLoginUser = await loginUser(
-        resultLoginWithGoogle.user.email,
-        resultLoginWithGoogle.user.displayName,
-        resultLoginWithGoogle.user.photoURL,
+        resultLoginWithGoogle.user.email!,
+        resultLoginWithGoogle.user.displayName!,
+        resultLoginWithGoogle.user.photoURL!,
       );
       navigate('/home');
       localStorage.setItem('token', responseLoginUser.token);

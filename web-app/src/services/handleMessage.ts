@@ -1,6 +1,14 @@
-export const processStreamEvent = (event, setMessages, currentMessagesId) => {
-  // console.log(event);
-  // console.log(event.data);
+interface Message {
+  id: string;
+  role: 'User' | 'assistant';
+  content: string;
+}
+
+export const processStreamEvent = (
+  event: MessageEvent,
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+  currentMessagesId: string,
+) => {
   const messageContent = event.data;
 
   if (messageContent) {
