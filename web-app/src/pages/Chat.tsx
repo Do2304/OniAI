@@ -8,6 +8,7 @@ import { useConversation } from '@/utils/ConversationContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
+import useUserId from '@/utils/useUserId';
 
 interface Message {
   role: 'User' | 'assistant';
@@ -20,7 +21,8 @@ const Chat = () => {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const userInfo = useUserId();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,9 +52,9 @@ const Chat = () => {
     ];
     setMessages(newMessages);
     const currentMessagesId = uuidv4();
-    const token = localStorage.getItem('token');
-    const decoded = JSON.parse(atob(token.split('.')[1]));
-    const userInfo = decoded.id;
+    // const token = localStorage.getItem('token');
+    // const decoded = JSON.parse(atob(token.split('.')[1]));
+    // const userInfo = decoded.id;
 
     const query = encodeURIComponent(JSON.stringify(input));
     let startConversationId;

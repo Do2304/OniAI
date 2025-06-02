@@ -44,16 +44,16 @@ const SidebarFooterLayout = () => {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        const infoUser = await getUserInfo(userId);
-        console.log('---', infoUser);
-
-        setInfoUserCurrent(infoUser);
+        if (userId) {
+          const infoUser = await getUserInfo(userId);
+          setInfoUserCurrent(infoUser);
+        }
       } catch (error) {
         console.error('Error fetching conversations:', error);
       }
     };
     fetchConversations();
-  }, []);
+  }, [userId]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

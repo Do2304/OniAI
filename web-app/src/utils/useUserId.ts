@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
 
 interface TokenPayload {
-  id: number;
+  id: string;
 }
 
 const useUserId = () => {
-  const [userId, setUserId] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string>('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
