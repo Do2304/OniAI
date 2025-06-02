@@ -102,7 +102,7 @@ const Chat = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            className="h-[100px] rounded-4xl"
+            className="h-[100px] rounded-4xl pb-10 pl-5"
             placeholder="Hỏi bất kỳ điều gì..."
           />
           <div style={{ height: '48px' }}></div>
