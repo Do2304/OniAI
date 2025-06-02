@@ -11,6 +11,7 @@ import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
 import useUserId from '@/utils/useUserId';
 
 interface Message {
+  id: string;
   role: 'User' | 'assistant';
   content: string;
 }
@@ -45,13 +46,13 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input) return;
-
+    const currentMessagesId = uuidv4();
     const newMessages: Message[] = [
       ...messages,
-      { role: 'User', content: input },
+      { id: currentMessagesId, role: 'User', content: input },
     ];
     setMessages(newMessages);
-    const currentMessagesId = uuidv4();
+
     // const token = localStorage.getItem('token');
     // const decoded = JSON.parse(atob(token.split('.')[1]));
     // const userInfo = decoded.id;
