@@ -5,7 +5,7 @@ const apiPath = {
   login: '/v1/login',
 };
 
-export const getUserInfo = async (id: number) => {
+export const getUserInfo = async (id: string) => {
   const response = await axiosInstance.get(apiPath.getUser.replace(':id', id));
   return response.data;
 };

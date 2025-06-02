@@ -44,7 +44,10 @@ const Chat = () => {
   const handleSend = async () => {
     if (!input) return;
 
-    const newMessages = [...messages, { role: 'User', content: input }];
+    const newMessages: Message[] = [
+      ...messages,
+      { role: 'User', content: input },
+    ];
     setMessages(newMessages);
     const currentMessagesId = uuidv4();
     const token = localStorage.getItem('token');
