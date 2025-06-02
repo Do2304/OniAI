@@ -11,7 +11,10 @@ export const getListConversationId = async () => {
   return response.data;
 };
 
-export const renameTittleConversation = async (id, newTitle) => {
+export const renameTittleConversation = async (
+  id: string,
+  newTitle: string,
+) => {
   const response = await axiosInstance.put(apiPath.renameTittle, {
     id,
     newTitle,
