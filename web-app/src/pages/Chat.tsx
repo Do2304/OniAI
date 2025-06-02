@@ -137,6 +137,7 @@ const Chat = () => {
                   variant="outline"
                   size="icon"
                   className="p-2 mr-8 ml-1 rounded-full"
+                  onClick={handleSend}
                 >
                   <ArrowUp />
                 </Button>
