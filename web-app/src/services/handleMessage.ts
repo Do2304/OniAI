@@ -1,5 +1,4 @@
 interface Message {
-  id: string;
   role: 'User' | 'assistant';
   content: string;
 }
