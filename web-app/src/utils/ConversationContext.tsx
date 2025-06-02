@@ -5,7 +5,13 @@ interface ConversationContextType {
   triggerUpdate: () => void;
 }
 
-const ConversationContext = createContext<ConversationContextType | null>(null);
+const defaultContext: ConversationContextType = {
+  updateKey: 0,
+  triggerUpdate: () => {},
+};
+
+const ConversationContext =
+  createContext<ConversationContextType>(defaultContext);
 
 export const useConversation = () => {
   return useContext(ConversationContext);
