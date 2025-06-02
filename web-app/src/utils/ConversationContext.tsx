@@ -1,8 +1,12 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface ConversationContextType {
   updateKey: number;
   triggerUpdate: () => void;
+}
+
+interface ConversationProviderProps {
+  children: ReactNode;
 }
 
 const defaultContext: ConversationContextType = {
@@ -17,7 +21,9 @@ export const useConversation = () => {
   return useContext(ConversationContext);
 };
 
-export const ConversationProvider = ({ children }) => {
+export const ConversationProvider = ({
+  children,
+}: ConversationProviderProps) => {
   const [updateKey, setUpdateKey] = useState(0);
 
   const triggerUpdate = () => {
