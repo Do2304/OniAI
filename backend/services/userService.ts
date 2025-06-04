@@ -38,9 +38,7 @@ export const login = async (email: string, name: string, photoURL: string) => {
     })
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-    expiresIn: '1h',
-  })
+  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY)
 
   return token
 }

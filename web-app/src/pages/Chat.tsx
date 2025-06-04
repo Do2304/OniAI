@@ -81,7 +81,7 @@ const Chat = () => {
   return (
     <>
       <h1 className="text-center text-3xl font-bold w-3/4">CHAT WITH ONI-AI</h1>
-      <div className="w-3/5 mt-10 mx-auto flex flex-col">
+      <div className="w-full sm:w-3/5 mt-10 mx-auto flex flex-col">
         <div className={`${messages && 'flex-1'}`}>
           {messages.map((msg, index) => (
             <div
@@ -125,10 +125,10 @@ const Chat = () => {
                 </Button>
                 <Button variant="outline" className="p-2 ml-1 rounded-full">
                   <Globe />
-                  Search
+                  <span className="hidden lg:inline">Search</span>
                 </Button>
                 <Button variant="outline" className="p-2 ml-1 rounded-full">
-                  <Siren /> Analysis
+                  <Siren /> <span className="hidden lg:inline">Analysis</span>
                 </Button>
               </div>
               <div>
