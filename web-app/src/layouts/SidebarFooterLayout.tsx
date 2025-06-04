@@ -57,6 +57,7 @@ const SidebarFooterLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    document.body.style.pointerEvents = 'auto';
   };
 
   return (
