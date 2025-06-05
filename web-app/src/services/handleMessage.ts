@@ -1,10 +1,15 @@
-export const processStreamEvent = (event, setMessages, currentMessagesId) => {
-  const jsonData = event.data.startsWith('data: ')
-    ? event.data.substring(6)
-    : event.data;
-  const messageData = JSON.parse(jsonData);
-  const messageContent = messageData.choices[0].delta.content;
-  const messageContentFinish = messageData.choices[0].finish_reason;
+interface Message {
+  id: string;
+  role: 'User' | 'assistant';
+  content: string;
+}
+
+export const processStreamEvent = (
+  event: MessageEvent,
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
+  currentMessagesId: string,
+) => {
+  const messageContent = event.data;
 
   if (messageContent) {
     setMessages((prevMessages) => {
@@ -21,8 +26,5 @@ export const processStreamEvent = (event, setMessages, currentMessagesId) => {
         ];
       }
     });
-  }
-  if (messageContentFinish === 'stop') {
-    eventSource.close();
   }
 };

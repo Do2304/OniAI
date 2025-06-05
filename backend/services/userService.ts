@@ -5,25 +5,27 @@ const prisma = new PrismaClient()
 const SECRET_KEY = process.env.JWT_SECRET || 'luli'
 
 interface User {
-  id: number
+  id: string
   email: string
   name: string
+  photoURL: string
 }
 
-export const getUser = async (userId: number): Promise<User | null> => {
+export const getUser = async (userId: string): Promise<User | null> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       email: true,
       name: true,
+      photoURL: true,
     },
   })
 
   return user
 }
 
-export const login = async (email: string, name: string) => {
+export const login = async (email: string, name: string, photoURL: string) => {
   let user = await prisma.user.findUnique({ where: { email } })
 
   if (!user) {
@@ -31,13 +33,12 @@ export const login = async (email: string, name: string) => {
       data: {
         name: name,
         email: email,
+        photoURL: photoURL,
       },
     })
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, {
-    expiresIn: '1h',
-  })
+  const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY)
 
   return token
 }

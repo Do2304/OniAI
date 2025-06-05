@@ -11,10 +11,31 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  output = "../node_modules/.prisma/client"
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  photoURL      String?
+  conversations Conversation[] @relation("UserConversations")
+}
+
+model Conversation {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation("UserConversations", fields: [userId], references: [id])
+  title         String
+  createdAt     DateTime    @default(now())
+  messages      Message[]
+}
+
+model Message {
+  id              String      @id @default(uuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id])
+  content         String
+  role            String
+  createdAt       DateTime    @default(now())
 }
