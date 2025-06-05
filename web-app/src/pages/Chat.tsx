@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
 import useUserId from '@/utils/useUserId';
+import ModelAI from './ModelAI';
 
 interface Message {
   id: string;
@@ -19,6 +20,7 @@ interface Message {
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedModel, setSelectedModel] = useState('gpt-4o');
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
@@ -66,7 +68,7 @@ const Chat = () => {
       navigate(`/chat/${response.conversationId}`);
     }
 
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}`;
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${selectedModel}`;
     const eventSource = new EventSource(apiChat);
     eventSource.onmessage = (event) =>
       processStreamEvent(event, setMessages, currentMessagesId);
@@ -123,6 +125,7 @@ const Chat = () => {
                 >
                   <Plus />
                 </Button>
+                <ModelAI onModelChange={setSelectedModel} />
                 <Button variant="outline" className="p-2 ml-1 rounded-full">
                   <Globe />
                   <span className="hidden lg:inline">Search</span>
