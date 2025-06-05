@@ -11,7 +11,9 @@ export const chatUser = async (req, res) => {
   const messages = JSON.parse(req.query.messages || '[]')
   const conversationId = req.query.conversationId
   const userId = req.query.userId
+  const selectedModel = req.query.model
   console.log('conversationId', conversationId)
+  console.log('selectedModel', selectedModel)
 
   try {
     const conversationExists = await prisma.conversation.findUnique({
@@ -44,7 +46,7 @@ export const chatUser = async (req, res) => {
     res.setHeader('Connection', 'keep-alive')
 
     const responseChatGPT = await client.responses.create({
-      model: 'gpt-4o',
+      model: selectedModel,
       input: messages,
       stream: true,
     })

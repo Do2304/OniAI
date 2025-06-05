@@ -11,25 +11,27 @@ import {
 import { SquarePlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const ModelAI = () => {
+interface ModelAIProps {
+  onModelChange: (model: string) => void;
+}
+
+const ModelAI = ({ onModelChange }: ModelAIProps) => {
   const [selectedModel, setSelectedModel] = useState('gpt-4o');
   const models = [
     { label: 'GPT-4.1', value: 'gpt-4.1' },
-    { label: 'GPT-4.1-small', value: 'gpt-4.1-small' },
     { label: 'GPT-4.1-nano', value: 'gpt-4.1-nano' },
     { label: 'GPT-4o', value: 'gpt-4o' },
-    { label: 'GPT-4o-small', value: 'gpt-4o-small' },
-    { label: 'o3', value: 'o3' },
     { label: 'o4-mini', value: 'o4-mini' },
-    { label: 'whisper', value: 'whisper' },
-    { label: 'Image-GPT-1', value: 'image-gpt-1' },
-    { label: 'GPT-4.5', value: 'gpt-4.5' },
-    { label: 'sora', value: 'sora' },
+    // { label: 'whisper', value: 'whisper' },
+    // { label: 'Image-GPT-1', value: 'image-gpt-1' },
+    // { label: 'GPT-4.5', value: 'gpt-4.5' },
+    // { label: 'sora', value: 'sora' },
   ];
 
   useEffect(() => {
     console.log('Selected Model:', selectedModel);
-  }, [selectedModel]);
+    onModelChange(selectedModel);
+  }, [selectedModel, onModelChange]);
 
   return (
     <>
