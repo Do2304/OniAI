@@ -7,8 +7,9 @@ import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowUp, Globe, Mic, Plus, Siren, SquarePlus } from 'lucide-react';
+import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
 import useUserId from '@/utils/useUserId';
+import ModelAI from './ModelAI';
 
 interface Message {
   id: string;
@@ -123,10 +124,7 @@ const Chat = () => {
                 >
                   <Plus />
                 </Button>
-                <Button variant="outline" className="p-2 ml-1 rounded-full">
-                  <SquarePlus />
-                  <span className="hidden lg:inline">Basic Model</span>
-                </Button>
+                <ModelAI />
                 <Button variant="outline" className="p-2 ml-1 rounded-full">
                   <Globe />
                   <span className="hidden lg:inline">Search</span>
