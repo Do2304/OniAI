@@ -22,10 +22,10 @@ const ModelAI = ({ onModelChange }: ModelAIProps) => {
     { label: 'GPT-4.1-nano', value: 'gpt-4.1-nano' },
     { label: 'GPT-4o', value: 'gpt-4o' },
     { label: 'o4-mini', value: 'o4-mini' },
-    // { label: 'whisper', value: 'whisper' },
-    // { label: 'Image-GPT-1', value: 'image-gpt-1' },
-    // { label: 'GPT-4.5', value: 'gpt-4.5' },
-    // { label: 'sora', value: 'sora' },
+    { label: 'Claude Opus 4', value: 'claude-opus-4-20250514' },
+    { label: 'Claude Sonnet 4', value: 'claude-sonnet-4-20250514' },
+    { label: 'Claude Sonnet 3.7', value: 'claude-3-7-sonnet-20250219' },
+    { label: 'Claude Haiku 3.5', value: 'claude-3-5-haiku-20241022' },
   ];
 
   useEffect(() => {

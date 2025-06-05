@@ -1,10 +1,14 @@
 import { PrismaClient } from '@prisma/client'
 import OpenAI from 'openai'
 import { v4 as uuidv4 } from 'uuid'
+import Anthropic from '@anthropic-ai/sdk'
 
 const prisma = new PrismaClient()
 const client = new OpenAI({
   apiKey: process.env.API_TOKEN,
+})
+const anthropic = new Anthropic({
+  apiKey: process.env.CLAUDE_API_KEY,
 })
 
 export const chatUser = async (req, res) => {
@@ -45,19 +49,31 @@ export const chatUser = async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
 
-    const responseChatGPT = await client.responses.create({
-      model: selectedModel,
-      input: messages,
-      stream: true,
-    })
-
     let fullMessage = ''
-    for await (const event of responseChatGPT) {
-      if (event.type === 'response.output_text.delta') {
-        const message = event.delta
-        if (message) {
-          fullMessage += message
-          res.write(`data: ${message}\n\n`)
+    if (selectedModel.startsWith('claude')) {
+      const responseChatGPT = await anthropic.messages.create({
+        model: selectedModel,
+        max_tokens: 1024,
+        messages: [{ role: 'user', content: messages }],
+      })
+      console.log('123', responseChatGPT)
+
+      // fullMessage = msg.completion
+      // res.write(`data: ${fullMessage}\n\n`)
+    } else {
+      const responseChatGPT = await client.responses.create({
+        model: selectedModel,
+        input: messages,
+        stream: true,
+      })
+
+      for await (const event of responseChatGPT) {
+        if (event.type === 'response.output_text.delta') {
+          const message = event.delta
+          if (message) {
+            fullMessage += message
+            res.write(`data: ${message}\n\n`)
+          }
         }
       }
     }
