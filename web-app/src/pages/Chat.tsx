@@ -20,7 +20,7 @@ interface Message {
 const Chat = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedModel, setSelectedModel] = useState('gpt-4o');
+  const [selectedModel, setSelectedModel] = useState<string[]>(['gpt-4o']);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
@@ -68,7 +68,7 @@ const Chat = () => {
       navigate(`/chat/${response.conversationId}`);
     }
 
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${selectedModel}`;
+    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${selectedModel.join(',')}`;
     const eventSource = new EventSource(apiChat);
     eventSource.onmessage = (event) =>
       processStreamEvent(event, setMessages, currentMessagesId);

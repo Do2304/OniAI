@@ -16,6 +16,7 @@ export const chatUser = async (req, res) => {
   const conversationId = req.query.conversationId
   const userId = req.query.userId
   const selectedModel = req.query.model
+  const modelArray = selectedModel.split(',')
   console.log('conversationId', conversationId)
   console.log('selectedModel', selectedModel)
 
@@ -61,18 +62,20 @@ export const chatUser = async (req, res) => {
       // fullMessage = msg.completion
       // res.write(`data: ${fullMessage}\n\n`)
     } else {
-      const responseChatGPT = await client.responses.create({
-        model: selectedModel,
-        input: messages,
-        stream: true,
-      })
+      for (const model of modelArray) {
+        const responseChatGPT = await client.responses.create({
+          model: model,
+          input: messages,
+          stream: true,
+        })
 
-      for await (const event of responseChatGPT) {
-        if (event.type === 'response.output_text.delta') {
-          const message = event.delta
-          if (message) {
-            fullMessage += message
-            res.write(`data: ${message}\n\n`)
+        for await (const event of responseChatGPT) {
+          if (event.type === 'response.output_text.delta') {
+            const message = event.delta
+            if (message) {
+              fullMessage += message
+              res.write(`data: ${message}\n\n`)
+            }
           }
         }
       }
