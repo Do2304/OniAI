@@ -15,6 +15,7 @@ interface Message {
   id: string;
   role: 'User' | 'assistant';
   content: string;
+  model?: string;
 }
 
 const Chat = () => {
@@ -54,13 +55,13 @@ const Chat = () => {
       { id: '', role: 'User', content: input },
     ];
     setMessages(newMessages);
-    const currentMessagesId = uuidv4();
+
     // const token = localStorage.getItem('token');
     // const decoded = JSON.parse(atob(token.split('.')[1]));
     // const userInfo = decoded.id;
 
     const query = encodeURIComponent(JSON.stringify(input));
-    let startConversationId;
+    let startConversationId: string;
     if (!conversationId) {
       const response = await conversationUser();
       startConversationId = response.conversationId;
@@ -68,14 +69,19 @@ const Chat = () => {
       navigate(`/chat/${response.conversationId}`);
     }
 
-    const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${selectedModel.join(',')}`;
-    const eventSource = new EventSource(apiChat);
-    eventSource.onmessage = (event) =>
-      processStreamEvent(event, setMessages, currentMessagesId);
+    console.log('select: ', selectedModel);
+    selectedModel.forEach((model) => {
+      console.log('select2: ', model);
+      const currentMessagesId = uuidv4();
+      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
+      const eventSource = new EventSource(apiChat);
+      eventSource.onmessage = (event) =>
+        processStreamEvent(event, setMessages, currentMessagesId, model);
 
-    eventSource.onerror = () => {
-      eventSource.close();
-    };
+      eventSource.onerror = () => {
+        eventSource.close();
+      };
+    });
 
     setInput('');
   };
@@ -99,6 +105,9 @@ const Chat = () => {
                 >
                   {msg.content}
                 </span>
+                {msg.model && (
+                  <div className="text-xs text-gray-500">{msg.model}</div>
+                )}
               </Badge>
             </div>
           ))}
