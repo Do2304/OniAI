@@ -15,29 +15,25 @@ export const processStreamEvent = (
 
   if (messageContent) {
     setMessages((prevMessages) => {
-      const newMessage: Message = {
-        id: currentMessagesId,
-        role: 'assistant',
-        content: messageContent,
-        model,
-      };
+      const existingIndex = prevMessages.findIndex(
+        (msg) => msg.id === currentMessagesId,
+      );
 
-      const lastMessage = prevMessages[prevMessages.length - 1];
-
-      if (
-        !lastMessage ||
-        lastMessage.model !== model ||
-        lastMessage.id !== currentMessagesId
-      ) {
+      if (existingIndex === -1) {
+        const newMessage: Message = {
+          id: currentMessagesId,
+          role: 'assistant',
+          content: messageContent,
+          model,
+        };
         return [...prevMessages, newMessage];
       } else {
-        return [
-          ...prevMessages.slice(0, -1),
-          {
-            ...lastMessage,
-            content: lastMessage.content + ' ' + messageContent,
-          },
-        ];
+        const updatedMessages = [...prevMessages];
+        updatedMessages[existingIndex] = {
+          ...updatedMessages[existingIndex],
+          content: updatedMessages[existingIndex].content + messageContent,
+        };
+        return updatedMessages;
       }
     });
   }
