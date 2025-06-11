@@ -4,12 +4,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
-import { Button } from '@/components/ui/button';
-import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
 import useUserId from '@/utils/useUserId';
-import ModelAI from '../ModelAI';
 import MessagesList from './MessagesList';
 import InputChat from './InputChat';
+import InputAction from './InputAction';
 
 interface Message {
   id: string;
@@ -49,7 +47,7 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input) return;
-
+    console.log('Sending message...');
     const newMessages: Message[] = [
       ...messages,
       { id: '', role: 'User', content: input },
@@ -95,47 +93,17 @@ const Chat = () => {
           messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
         />
         <div className="relative flex w-full items-end px-3 py-3">
-          <InputChat selectedModel={selectedModel} setMessages={setMessages} />
+          <InputChat
+            input={input}
+            setInput={setInput}
+            selectedModel={selectedModel}
+            setMessages={setMessages}
+          />
           <div style={{ height: '48px' }}></div>
-
-          <div className="absolute start-3 end-0 bottom-6 z-2 flex items-center">
-            <div className="w-full flex items-center justify-between">
-              <div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="p-2 ml-4 rounded-full"
-                >
-                  <Plus />
-                </Button>
-                <ModelAI onModelChange={setSelectedModel} />
-                <Button variant="outline" className="p-2 ml-1 rounded-full">
-                  <Globe />
-                  <span className="hidden lg:inline">Search</span>
-                </Button>
-                <Button variant="outline" className="p-2 ml-1 rounded-full">
-                  <Siren /> <span className="hidden lg:inline">Analysis</span>
-                </Button>
-              </div>
-              <div>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="p-2 rounded-full"
-                >
-                  <Mic />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="p-2 mr-8 ml-1 rounded-full"
-                  onClick={handleSend}
-                >
-                  <ArrowUp />
-                </Button>
-              </div>
-            </div>
-          </div>
+          <InputAction
+            setSelectedModel={setSelectedModel}
+            handleSend={handleSend}
+          />
         </div>
       </div>
     </>

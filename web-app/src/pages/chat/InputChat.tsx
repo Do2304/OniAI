@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
@@ -14,17 +13,21 @@ interface Message {
   model?: string;
 }
 interface InputChatProps {
+  input: string;
+  setInput: (value: string) => void;
   selectedModel: string[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-const InputChat = ({ selectedModel, setMessages }: InputChatProps) => {
-  const [input, setInput] = useState('');
-  // const [messages, setMessages] = useState<Message[]>([]);
+const InputChat = ({
+  input,
+  setInput,
+  selectedModel,
+  setMessages,
+}: InputChatProps) => {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
-  // const [selectedModel, setSelectedModel] = useState<string[]>(['gpt-4o']);
   const userInfo = useUserId();
 
   const handleSend = async () => {
