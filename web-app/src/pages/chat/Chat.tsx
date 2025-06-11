@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { Input } from '@/components/ui/input';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
 import useUserId from '@/utils/useUserId';
-import ModelAI from './ModelAI';
+import ModelAI from '../ModelAI';
+import MessagesList from './MessagesList';
+import InputChat from './InputChat';
 
 interface Message {
   id: string;
@@ -90,38 +90,12 @@ const Chat = () => {
     <>
       <h1 className="text-center text-3xl font-bold w-3/4">CHAT WITH ONI-AI</h1>
       <div className="w-full sm:w-3/5 mt-10 mx-auto flex flex-col">
-        <div className={`${messages && 'flex-1'}`}>
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`mb-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
-            >
-              <Badge
-                variant="outline"
-                className={`text-base ml-2 ${msg.role === 'User' && 'bg-gray-100 p-3 pl-6 pr-6 mr-3 rounded-full'} whitespace-normal border border-none`}
-              >
-                <span
-                  className={`block ${msg.role === 'User' && 'text-gray-800'}`}
-                >
-                  {msg.content}
-                </span>
-                {msg.model && (
-                  <div className="text-xs text-gray-500">{msg.model}</div>
-                )}
-              </Badge>
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
-        </div>
+        <MessagesList
+          messages={messages}
+          messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
+        />
         <div className="relative flex w-full items-end px-3 py-3">
-          <Input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            className="h-[100px] rounded-4xl pb-10 pl-5"
-            placeholder="Hỏi bất kỳ điều gì..."
-          />
+          <InputChat selectedModel={selectedModel} setMessages={setMessages} />
           <div style={{ height: '48px' }}></div>
 
           <div className="absolute start-3 end-0 bottom-6 z-2 flex items-center">
