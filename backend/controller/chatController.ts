@@ -2,6 +2,9 @@ import { PrismaClient } from '@prisma/client'
 import OpenAI from 'openai'
 import { v4 as uuidv4 } from 'uuid'
 import Anthropic from '@anthropic-ai/sdk'
+import * as conversationService from '../services/conversationService'
+import * as messageService from '../services/messageService'
+import { ChatOpenAIResponse } from '../services/AIService.ts/openAIService'
 
 const prisma = new PrismaClient()
 const client = new OpenAI({
@@ -16,34 +19,10 @@ export const chatUser = async (req, res) => {
   const conversationId = req.query.conversationId
   const userId = req.query.userId
   const selectedModel = req.query.model
-  console.log('conversationId', conversationId)
-  console.log('selectedModel', selectedModel)
 
   try {
-    const conversationExists = await prisma.conversation.findUnique({
-      where: {
-        id: conversationId,
-      },
-    })
-    if (!conversationExists) {
-      await prisma.conversation.create({
-        data: {
-          id: conversationId,
-          title: 'New Chat',
-          user: {
-            connect: { id: userId },
-          },
-        },
-      })
-    }
-
-    await prisma.message.create({
-      data: {
-        conversationId: conversationId,
-        content: messages,
-        role: 'User',
-      },
-    })
+    await conversationService.CreateNewConversation(conversationId, userId)
+    await messageService.createUserMessage(conversationId, messages)
 
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
@@ -61,30 +40,15 @@ export const chatUser = async (req, res) => {
       // fullMessage = msg.completion
       // res.write(`data: ${fullMessage}\n\n`)
     } else {
-      const responseChatGPT = await client.responses.create({
-        model: selectedModel,
-        input: messages,
-        stream: true,
-      })
-
-      for await (const event of responseChatGPT) {
-        if (event.type === 'response.output_text.delta') {
-          const message = event.delta
-          if (message) {
-            fullMessage += message
-            res.write(`data: ${message}\n\n`)
-          }
-        }
-      }
+      fullMessage = await ChatOpenAIResponse(
+        client,
+        selectedModel,
+        messages,
+        res,
+      )
     }
 
-    await prisma.message.create({
-      data: {
-        conversationId: conversationId,
-        content: fullMessage,
-        role: 'Assistant',
-      },
-    })
+    await messageService.createAssistantMessage(conversationId, fullMessage)
 
     res.write('event: end\n\n')
     res.end()
