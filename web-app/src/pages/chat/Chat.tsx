@@ -47,6 +47,7 @@ const Chat = () => {
   });
 
   useEffect(() => {
+    setMessages([]);
     if (fetchedMessages) {
       setMessages(fetchedMessages);
     }
