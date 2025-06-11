@@ -8,6 +8,7 @@ import useUserId from '@/utils/useUserId';
 import MessagesList from './MessagesList';
 import InputChat from './InputChat';
 import InputAction from './InputAction';
+import { useQuery } from '@tanstack/react-query';
 
 interface Message {
   id: string;
@@ -30,20 +31,30 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  const {
+    data: fetchedMessages,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['getMessages', conversationId],
+    queryFn: async () => {
+      if (!conversationId) return [];
+      const res = await getHistoryConversation(conversationId);
+      return res.messages;
+    },
+    enabled: !!conversationId,
+  });
+
   useEffect(() => {
-    const fetchInitialMessages = async () => {
-      setMessages([]);
-      if (conversationId) {
-        try {
-          const historyMessages = await getHistoryConversation(conversationId);
-          setMessages(historyMessages.messages);
-        } catch (error) {
-          console.error('Error fetching initial messages:', error);
-        }
-      }
-    };
-    fetchInitialMessages();
-  }, [conversationId]);
+    if (fetchedMessages) {
+      setMessages(fetchedMessages);
+    }
+  }, [fetchedMessages]);
+  if (isLoading)
+    return <div className="text-center">Loading conversation...</div>;
+  if (isError)
+    return <div className="text-red-500">Error: {error.message}</div>;
 
   const handleSend = async () => {
     if (!input) return;
@@ -53,10 +64,6 @@ const Chat = () => {
       { id: '', role: 'User', content: input },
     ];
     setMessages(newMessages);
-
-    // const token = localStorage.getItem('token');
-    // const decoded = JSON.parse(atob(token.split('.')[1]));
-    // const userInfo = decoded.id;
 
     const query = encodeURIComponent(JSON.stringify(input));
     let startConversationId: string;
