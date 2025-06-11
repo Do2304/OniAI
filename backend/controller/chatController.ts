@@ -75,24 +75,10 @@ export const getMessagesByConversationId = async (req, res) => {
   const { conversationId } = req.params
   const infoUser = req.user
   try {
-    const messages = await prisma.message.findMany({
-      where: {
-        conversationId: conversationId,
-        conversation: {
-          userId: infoUser.id.toString(),
-        },
-      },
-      select: {
-        content: true,
-        role: true,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    })
-    if (messages.length === 0) {
-      return res.status(404).json({ message: 'No messages found' })
-    }
+    const messages = await messageService.getMessagesById(
+      conversationId,
+      infoUser.id.toString(),
+    )
     res.json({ messages, infoUser })
   } catch (error) {
     console.error('Error fetching messages:', error)
@@ -104,7 +90,6 @@ export const getMessagesByConversationId = async (req, res) => {
 
 export const getListConversationId = async (req, res) => {
   const infoUser = req.user
-  console.log('User ID:', infoUser.id)
   try {
     const listConversationId = await prisma.conversation.findMany({
       where: {
@@ -120,7 +105,6 @@ export const getListConversationId = async (req, res) => {
         id: true,
       },
     })
-    console.log('----', listConversationId)
 
     res.json({ listConversationId, infoUser })
   } catch (error) {
