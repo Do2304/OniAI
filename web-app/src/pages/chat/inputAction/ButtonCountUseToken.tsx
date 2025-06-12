@@ -1,3 +1,4 @@
+import { getUsageTotalToken } from '@/api/tokenService';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -9,12 +10,15 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import useUserId from '@/utils/useUserId';
 import { Siren } from 'lucide-react';
 
 const ButtonCountUseToken = () => {
+  const userInfo = useUserId();
   const handleFetchTokenUsage = async () => {
     try {
-      console.log('LẤY TOKEN');
+      const getTotalToken = await getUsageTotalToken(userInfo);
+      console.log('123', getTotalToken);
     } catch (err) {
       console.log('Could not fetch token usage', err);
     }
