@@ -12,13 +12,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import useUserId from '@/utils/useUserId';
 import { Siren } from 'lucide-react';
+import { useState } from 'react';
 
 const ButtonCountUseToken = () => {
+  const [usedToken, setUsedToken] = useState<number>(0);
+  const totals = 1000;
   const userInfo = useUserId();
   const handleFetchTokenUsage = async () => {
     try {
       const getTotalToken = await getUsageTotalToken(userInfo);
       console.log('123', getTotalToken);
+      setUsedToken(getTotalToken.used);
     } catch (err) {
       console.log('Could not fetch token usage', err);
     }
@@ -37,15 +41,15 @@ const ButtonCountUseToken = () => {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             Total Tokens:
-            <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+            <DropdownMenuShortcut>⌘{totals}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Used:
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+            <DropdownMenuShortcut>⌘{usedToken}</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Remaining Tokens:
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+            <DropdownMenuShortcut>⌘{totals - usedToken}</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
