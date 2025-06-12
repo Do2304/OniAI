@@ -12,20 +12,22 @@ import {
 } from '@/components/ui/dropdown-menu';
 import useUserId from '@/utils/useUserId';
 import { Siren } from 'lucide-react';
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 const ButtonCountUseToken = () => {
-  const [usedToken, setUsedToken] = useState<number>(0);
-  const totals = 1000;
   const userInfo = useUserId();
-  const handleFetchTokenUsage = async () => {
-    try {
+  const totals = 1000;
+
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ['tokenUsage', userInfo],
+    queryFn: async () => {
       const getTotalToken = await getUsageTotalToken(userInfo);
-      console.log('123', getTotalToken);
-      setUsedToken(getTotalToken.used);
-    } catch (err) {
-      console.log('Could not fetch token usage', err);
-    }
+      return getTotalToken;
+    },
+    enabled: !!userInfo,
+  });
+  const handleFetchTokenUsage = () => {
+    refetch();
   };
 
   return (
@@ -45,13 +47,18 @@ const ButtonCountUseToken = () => {
           </DropdownMenuItem>
           <DropdownMenuItem>
             Used:
-            <DropdownMenuShortcut>⌘{usedToken}</DropdownMenuShortcut>
+            <DropdownMenuShortcut>
+              ⌘{isLoading ? 'Loading...' : data?.used}
+            </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem>
             Remaining Tokens:
-            <DropdownMenuShortcut>⌘{totals - usedToken}</DropdownMenuShortcut>
+            <DropdownMenuShortcut>
+              ⌘{isLoading ? 'Loading...' : data?.remaining}
+            </DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        {isError && <DropdownMenuItem>Error: {error.message}</DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>
   );
