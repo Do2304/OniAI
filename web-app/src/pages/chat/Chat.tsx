@@ -7,7 +7,7 @@ import { useConversation } from '@/utils/ConversationContext';
 import useUserId from '@/utils/useUserId';
 import MessagesList from './MessagesList';
 import InputChat from './InputChat';
-import InputAction from './InputAction';
+import InputAction from './inputAction/InputAction';
 import { useQuery } from '@tanstack/react-query';
 
 interface Message {

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
-import { ArrowUp, Globe, Mic, Plus, Siren } from 'lucide-react';
-import ModelAI from '../ModelAI';
+import { ArrowUp, Globe, Mic, Plus } from 'lucide-react';
+import ModelAI from '../../ModelAI';
+import ButtonCountUseToken from './ButtonCountUseToken';
 
 interface InputActionsProps {
   setSelectedModel: (model: string[]) => void;
@@ -24,9 +25,7 @@ const InputAction = ({ setSelectedModel, handleSend }: InputActionsProps) => {
             <Globe />
             <span className="hidden lg:inline">Search</span>
           </Button>
-          <Button variant="outline" className="p-2 ml-1 rounded-full">
-            <Siren /> <span className="hidden lg:inline">Analysis</span>
-          </Button>
+          <ButtonCountUseToken />
         </div>
         <div>
           <Button variant="outline" size="icon" className="p-2 rounded-full">
