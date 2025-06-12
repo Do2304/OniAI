@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { processStreamEvent } from '@/services/handleMessage';
 import { Input } from '@/components/ui/input';
 import useUserId from '@/utils/useUserId';
+import { getUsageTotalToken } from '@/api/tokenService';
+import { useQuery } from '@tanstack/react-query';
 
 interface Message {
   id: string;
@@ -29,9 +31,32 @@ const InputChat = ({
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
   const userInfo = useUserId();
+  // const queryClient = useQueryClient();
+  // const [test, setTest] = useState(0);
+
+  const { data, refetch } = useQuery({
+    queryKey: ['tokenUsage', setInput],
+    queryFn: () => getUsageTotalToken(userInfo),
+    enabled: !!userInfo,
+  });
+  // useEffect(() => {
+  //   const fetchInitialMessages = async () => {
+  //     try {
+  //       const historyMessages = await getUsageTotalToken(userInfo);
+  //       setTest(historyMessages.used);
+  //     } catch (error) {
+  //       console.error('Error fetching initial messages:', error);
+  //     }
+  //   };
+  //   fetchInitialMessages();
+  // }, [userInfo]);
 
   const handleSend = async () => {
     if (!input) return;
+    if (data.used >= 1586) {
+      alert('🚫 You have run out of tokens. Cannot send more messages.');
+      return;
+    }
 
     const newMessages: Message = { id: '', role: 'User', content: input };
     setMessages((prevMessages) => [...prevMessages, newMessages]);
@@ -58,6 +83,8 @@ const InputChat = ({
     });
 
     setInput('');
+    refetch();
+    // queryClient.invalidateQueries(['tokenUsage', userInfo]);
   };
   return (
     <>
