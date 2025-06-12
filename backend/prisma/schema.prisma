@@ -19,6 +19,7 @@ model User {
   name          String
   email         String         @unique
   photoURL      String?
+  token         Int?           @default(0)
   conversations Conversation[] @relation("UserConversations")
 }
 

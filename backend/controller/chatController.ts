@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import Anthropic from '@anthropic-ai/sdk'
 import * as conversationService from '../services/conversationService'
 import * as messageService from '../services/messageService'
+import * as countTokenService from '../services/countTokenService'
 import { ChatOpenAIResponse } from '../services/AIService.ts/openAIService'
 
 const client = new OpenAI({
@@ -27,6 +28,7 @@ export const chatUser = async (req, res) => {
     res.setHeader('Connection', 'keep-alive')
 
     let fullMessage = ''
+    let totalToken = 0
     if (selectedModel.startsWith('claude')) {
       const responseChatGPT = await anthropic.messages.create({
         model: selectedModel,
@@ -38,15 +40,18 @@ export const chatUser = async (req, res) => {
       // fullMessage = msg.completion
       // res.write(`data: ${fullMessage}\n\n`)
     } else {
-      fullMessage = await ChatOpenAIResponse(
+      const reslultChatOpenAIResponse = await ChatOpenAIResponse(
         client,
         selectedModel,
         messages,
         res,
       )
+      fullMessage = reslultChatOpenAIResponse.fullMessage
+      totalToken = reslultChatOpenAIResponse.totalToken
     }
 
     await messageService.createAssistantMessage(conversationId, fullMessage)
+    await countTokenService.countUseToken(userId, totalToken)
 
     res.write('event: end\n\n')
     res.end()
