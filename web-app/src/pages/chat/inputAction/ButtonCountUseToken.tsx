@@ -16,7 +16,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const ButtonCountUseToken = () => {
   const userInfo = useUserId();
-  const totals = 1514;
+  const totals = 5000;
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['tokenUsage', userInfo],

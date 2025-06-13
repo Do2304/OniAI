@@ -35,7 +35,7 @@ const InputChat = ({
   // const [test, setTest] = useState(0);
 
   const { data, refetch } = useQuery({
-    queryKey: ['tokenUsage', setInput],
+    queryKey: ['tokenUsage', input],
     queryFn: () => getUsageTotalToken(userInfo),
     enabled: !!userInfo,
   });
@@ -49,11 +49,13 @@ const InputChat = ({
   //     }
   //   };
   //   fetchInitialMessages();
-  // }, [userInfo]);
+  // }, [input]);
 
   const handleSend = async () => {
     if (!input) return;
-    if (data.used >= 1586) {
+    console.log(data.used);
+
+    if (data.used >= 5000) {
       alert('🚫 You have run out of tokens. Cannot send more messages.');
       return;
     }
