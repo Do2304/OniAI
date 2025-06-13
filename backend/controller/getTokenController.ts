@@ -11,7 +11,7 @@ export const getTotalToken = async (req, res) => {
       select: { token: true },
     })
     if (user) {
-      const totalTokens = 5000
+      const totalTokens = 5510
       const usedTokens = user.token || 0
       const remainingTokens = totalTokens - usedTokens
 

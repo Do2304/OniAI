@@ -53,7 +53,8 @@ export const chatUser = async (req, res) => {
     await messageService.createAssistantMessage(conversationId, fullMessage)
     await countTokenService.countUseToken(userId, totalToken)
 
-    res.write('event: end\n\n')
+    res.write(`event: end\n`)
+    res.write(`data: done\n\n`)
     res.end()
   } catch (error) {
     console.error('Error fetching data from OpenAI:', error)

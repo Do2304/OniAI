@@ -31,32 +31,19 @@ const InputChat = ({
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
   const userInfo = useUserId();
-  // const queryClient = useQueryClient();
-  // const [test, setTest] = useState(0);
 
   const { data, refetch } = useQuery({
-    queryKey: ['tokenUsage', input],
+    queryKey: ['tokenUsage'],
     queryFn: () => getUsageTotalToken(userInfo),
     enabled: !!userInfo,
   });
-  // useEffect(() => {
-  //   const fetchInitialMessages = async () => {
-  //     try {
-  //       const historyMessages = await getUsageTotalToken(userInfo);
-  //       setTest(historyMessages.used);
-  //     } catch (error) {
-  //       console.error('Error fetching initial messages:', error);
-  //     }
-  //   };
-  //   fetchInitialMessages();
-  // }, [input]);
 
   const handleSend = async () => {
     if (!input) return;
     console.log(data.used);
 
-    if (data.used >= 5000) {
-      alert('🚫 You have run out of tokens. Cannot send more messages.');
+    if (data.used >= 5510) {
+      alert('You have run out of tokens. Cannot send more messages.');
       return;
     }
 
@@ -79,14 +66,24 @@ const InputChat = ({
       eventSource.onmessage = (event) =>
         processStreamEvent(event, setMessages, currentMessagesId, model);
 
+      eventSource.addEventListener('end', async () => {
+        eventSource.close();
+        try {
+          const { data: newData } = await refetch();
+          if (newData?.used != null) {
+            console.log('Updated token usage:', newData.used);
+          }
+        } catch (err) {
+          console.error(' Error during refetch:', err);
+        }
+      });
+
       eventSource.onerror = () => {
         eventSource.close();
       };
     });
 
     setInput('');
-    refetch();
-    // queryClient.invalidateQueries(['tokenUsage', userInfo]);
   };
   return (
     <>
@@ -96,7 +93,7 @@ const InputChat = ({
         onChange={(e) => setInput(e.target.value)}
         onKeyPress={(e) => e.key === 'Enter' && handleSend()}
         className="h-[100px] rounded-4xl pb-10 pl-5"
-        placeholder="Hỏi bất kỳ điều gì..."
+        placeholder="Ask anything..."
       />
     </>
   );
