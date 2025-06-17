@@ -17,7 +17,7 @@ export const chatUser = async (req, res) => {
   const messages = JSON.parse(req.query.messages || '[]')
   const conversationId = req.query.conversationId
   const userId = req.query.userId
-  const selectedModel = req.query.model
+  const selectedModels = req.query.model
 
   try {
     await conversationService.CreateNewConversation(conversationId, userId)
@@ -29,9 +29,9 @@ export const chatUser = async (req, res) => {
 
     let fullMessage = ''
     let totalToken = 0
-    if (selectedModel.startsWith('claude')) {
+    if (selectedModels.startsWith('claude')) {
       const responseChatGPT = await anthropic.messages.create({
-        model: selectedModel,
+        model: selectedModels,
         max_tokens: 1024,
         messages: [{ role: 'user', content: messages }],
       })
@@ -42,7 +42,7 @@ export const chatUser = async (req, res) => {
     } else {
       const reslultChatOpenAIResponse = await ChatOpenAIResponse(
         client,
-        selectedModel,
+        selectedModels,
         messages,
         res,
       )
