@@ -6,7 +6,7 @@ export const getListConversationId = async (req, res) => {
 
   try {
     const listConversationId =
-      await conversationService.getListConversationId(info)
+      await conversationService.getListConversation(info)
 
     res.json({ listConversationId, infoUser })
   } catch (error) {
@@ -21,10 +21,8 @@ export const renameConversation = async (req, res) => {
   const { id, newTitle } = req.body
 
   try {
-    const updatedConversation = await conversationService.renameConversationId(
-      id,
-      newTitle,
-    )
+    const updatedConversation =
+      await conversationService.renameConversationById(id, newTitle)
     res.json(updatedConversation)
   } catch (error) {
     console.error('Error updating conversation title:', error)
@@ -38,7 +36,7 @@ export const deleteConversation = async (req, res) => {
   const { id } = req.params
 
   try {
-    const result = await conversationService.deleteConversationId(id)
+    const result = await conversationService.deleteConversationById(id)
     res.status(200).json(result)
   } catch (error) {
     console.error('Error deleting conversation:', error)

@@ -10,7 +10,7 @@ const anthropic = new Anthropic({
 })
 
 export const chatUser = async (req, res) => {
-  const messages = JSON.parse(req.query.messages || '[]')
+  const message = JSON.parse(req.query.messages || '[]')
   const conversationId = req.query.conversationId
   const userId = req.query.userId
   const selectedModels = req.query.model
@@ -21,7 +21,7 @@ export const chatUser = async (req, res) => {
     if (!conversationExists) {
       await conversationService.createNewConversation(conversationId, userId)
     }
-    await messageService.createUserMessage(conversationId, messages)
+    await messageService.createUserMessage(conversationId, message)
 
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
@@ -35,7 +35,7 @@ export const chatUser = async (req, res) => {
         const responseChatGPT = await anthropic.messages.create({
           model: selectedModels,
           max_tokens: 1024,
-          messages: [{ role: 'user', content: messages }],
+          messages: [{ role: 'user', content: message }],
         })
         console.log('123', responseChatGPT)
 
@@ -50,7 +50,7 @@ export const chatUser = async (req, res) => {
       case 'o4-mini': {
         const resultChatOpenAIResponse = await getChatOpenAIResponse(
           selectedModels,
-          messages,
+          message,
           res,
         )
         fullMessage = resultChatOpenAIResponse.fullMessage

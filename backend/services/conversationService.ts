@@ -27,7 +27,7 @@ export const createNewConversation = async (
   })
 }
 
-export const getListConversationId = async (userId: string) => {
+export const getListConversation = async (userId: string) => {
   const listConversationId = await prisma.conversation.findMany({
     where: {
       user: {
@@ -46,7 +46,7 @@ export const getListConversationId = async (userId: string) => {
   return listConversationId
 }
 
-export const renameConversationId = async (id: string, newTitle: string) => {
+export const renameConversationById = async (id: string, newTitle: string) => {
   const getConversationId = await prisma.conversation.findUnique({
     where: { id: id },
   })
@@ -61,7 +61,7 @@ export const renameConversationId = async (id: string, newTitle: string) => {
   return updatedConversation
 }
 
-export const deleteConversationId = async (id: string) => {
+export const deleteConversationById = async (id: string) => {
   const conversation = await prisma.conversation.findUnique({
     where: { id: id },
   })

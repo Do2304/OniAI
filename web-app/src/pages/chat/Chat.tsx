@@ -79,7 +79,7 @@ const Chat = () => {
     selectedModel.forEach((model) => {
       console.log('select2: ', model);
       const currentMessagesId = uuidv4();
-      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
+      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?message=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
       const eventSource = new EventSource(apiChat);
       eventSource.onmessage = (event) =>
         processStreamEvent(event, setMessages, currentMessagesId, model);
