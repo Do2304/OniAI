@@ -8,6 +8,7 @@ import useUserId from '@/utils/useUserId';
 import MessagesList from './MessagesList';
 import { useQuery } from '@tanstack/react-query';
 import InputArea from './InputArea';
+import { getUsageTotalToken } from '@/api/tokenService';
 
 interface Message {
   id: string;
@@ -45,6 +46,12 @@ const Chat = () => {
     enabled: !!conversationId,
   });
 
+  const { data, refetch } = useQuery({
+    queryKey: ['tokenUsage'],
+    queryFn: () => getUsageTotalToken(userInfo),
+    enabled: !!userInfo,
+  });
+
   useEffect(() => {
     setMessages([]);
     if (fetchedMessages) {
@@ -58,12 +65,15 @@ const Chat = () => {
 
   const handleSend = async () => {
     if (!input) return;
-    console.log('Sending message...');
-    const newMessages: Message[] = [
-      ...messages,
-      { id: '', role: 'User', content: input },
-    ];
-    setMessages(newMessages);
+    console.log(data.used);
+
+    // if (data.used >= 6000) {
+    //   alert('You have run out of tokens. Cannot send more messages.');
+    //   return;
+    // }
+
+    const newMessages: Message = { id: '', role: 'User', content: input };
+    setMessages((prevMessages) => [...prevMessages, newMessages]);
 
     const query = encodeURIComponent(JSON.stringify(input));
     let startConversationId: string;
@@ -74,14 +84,24 @@ const Chat = () => {
       navigate(`/chat/${response.conversationId}`);
     }
 
-    console.log('select: ', selectedModel);
     selectedModel.forEach((model) => {
-      console.log('select2: ', model);
       const currentMessagesId = uuidv4();
-      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?message=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
+      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
       const eventSource = new EventSource(apiChat);
       eventSource.onmessage = (event) =>
         processStreamEvent(event, setMessages, currentMessagesId, model);
+
+      eventSource.addEventListener('end', async () => {
+        eventSource.close();
+        try {
+          const { data: newData } = await refetch();
+          if (newData?.used != null) {
+            console.log('Updated token usage:', newData.used);
+          }
+        } catch (err) {
+          console.error(' Error during refetch:', err);
+        }
+      });
 
       eventSource.onerror = () => {
         eventSource.close();
@@ -103,8 +123,6 @@ const Chat = () => {
           <InputArea
             input={input}
             setInput={setInput}
-            selectedModel={selectedModel}
-            setMessages={setMessages}
             setSelectedModel={setSelectedModel}
             handleSend={handleSend}
           />
