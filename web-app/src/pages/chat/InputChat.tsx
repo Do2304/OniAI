@@ -42,10 +42,10 @@ const InputChat = ({
     if (!input) return;
     console.log(data.used);
 
-    if (data.used >= 5510) {
-      alert('You have run out of tokens. Cannot send more messages.');
-      return;
-    }
+    // if (data.used >= 6000) {
+    //   alert('You have run out of tokens. Cannot send more messages.');
+    //   return;
+    // }
 
     const newMessages: Message = { id: '', role: 'User', content: input };
     setMessages((prevMessages) => [...prevMessages, newMessages]);

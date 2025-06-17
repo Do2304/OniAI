@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Globe, Mic, Plus } from 'lucide-react';
-import ModelAI from '../../ModelAI';
+import ModelAI from './ModelAI';
 import ButtonCountUseToken from './ButtonCountUseToken';
 
 interface InputActionsProps {

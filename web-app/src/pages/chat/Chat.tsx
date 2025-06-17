@@ -6,9 +6,8 @@ import { conversationUser, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
 import useUserId from '@/utils/useUserId';
 import MessagesList from './MessagesList';
-import InputChat from './InputChat';
-import InputAction from './inputAction/InputAction';
 import { useQuery } from '@tanstack/react-query';
+import InputArea from './InputArea';
 
 interface Message {
   id: string;
@@ -101,14 +100,11 @@ const Chat = () => {
           messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
         />
         <div className="relative flex w-full items-end px-3 py-3">
-          <InputChat
+          <InputArea
             input={input}
             setInput={setInput}
             selectedModel={selectedModel}
             setMessages={setMessages}
-          />
-          <div style={{ height: '48px' }}></div>
-          <InputAction
             setSelectedModel={setSelectedModel}
             handleSend={handleSend}
           />
