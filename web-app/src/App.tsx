@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import ProtectedRoutes from './utils/ProtectedRoutes.tsx';
-import Chat from './pages/Chat.tsx';
+import Chat from './pages/chat/Chat.tsx';
 import Layout from './layouts/Layout.tsx';
 import { ConversationProvider } from './utils/ConversationContext.tsx';
 

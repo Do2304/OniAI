@@ -4,7 +4,7 @@ import {
   deleteConversation,
   getListConversationId,
   renameConversation,
-} from '../controller/chatController'
+} from '../controller/conversationController'
 
 const router = express.Router()
 
