@@ -9,6 +9,13 @@ import {
 import { SquarePlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+enum AIModels {
+  GPT_4_1 = 'gpt-4.1',
+  GPT_4_1_NANO = 'gpt-4.1-nano',
+  GPT_4O = 'gpt-4o',
+  O4_MINI = 'o4-mini',
+}
+
 interface ModelAIProps {
   onModelChange: (models: string[]) => void;
 }
@@ -16,10 +23,10 @@ interface ModelAIProps {
 const ModelAI = ({ onModelChange }: ModelAIProps) => {
   const [selectedModels, setSelectedModels] = useState<string[]>(['gpt-4o']);
   const models = [
-    { label: 'GPT-4.1', value: 'gpt-4.1' },
-    { label: 'GPT-4.1-nano', value: 'gpt-4.1-nano' },
-    { label: 'GPT-4o', value: 'gpt-4o' },
-    { label: 'o4-mini', value: 'o4-mini' },
+    { label: 'GPT-4.1', value: AIModels.GPT_4_1 },
+    { label: 'GPT-4.1-nano', value: AIModels.GPT_4_1_NANO },
+    { label: 'GPT-4o', value: AIModels.GPT_4O },
+    { label: 'o4-mini', value: AIModels.O4_MINI },
   ];
 
   const handleModelChange = (value: string) => {
