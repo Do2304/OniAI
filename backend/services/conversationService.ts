@@ -2,27 +2,29 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export const CreateNewConversation = async (
-  conversationId: string,
-  userId: string,
-) => {
-  const conversationExists = await prisma.conversation.findUnique({
+export const findConversation = async (conversationId: string) => {
+  const conversation = await prisma.conversation.findUnique({
     where: {
       id: conversationId,
     },
   })
 
-  if (!conversationExists) {
-    await prisma.conversation.create({
-      data: {
-        id: conversationId,
-        title: 'New Chat',
-        user: {
-          connect: { id: userId },
-        },
+  return conversation
+}
+
+export const createNewConversation = async (
+  conversationId: string,
+  userId: string,
+) => {
+  await prisma.conversation.create({
+    data: {
+      id: conversationId,
+      title: 'New Chat',
+      user: {
+        connect: { id: userId },
       },
-    })
-  }
+    },
+  })
 }
 
 export const getListConversationId = async (userId: string) => {

@@ -20,7 +20,11 @@ export const chatUser = async (req, res) => {
   const selectedModels = req.query.model
 
   try {
-    await conversationService.CreateNewConversation(conversationId, userId)
+    const conversationExists =
+      await conversationService.findConversation(conversationId)
+    if (!conversationExists) {
+      await conversationService.createNewConversation(conversationId, userId)
+    }
     await messageService.createUserMessage(conversationId, messages)
 
     res.setHeader('Content-Type', 'text/event-stream')
