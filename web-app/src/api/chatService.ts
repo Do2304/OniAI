@@ -6,7 +6,7 @@ const apiPath = {
   getFirstConversation: 'v1/chat/stream',
 };
 
-export const conversationUser = async () => {
+export const createConversation = async () => {
   const response = await axiosInstance.post(apiPath.conversationUser);
   return response.data;
 };

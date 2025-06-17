@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
-import { conversationUser, getHistoryConversation } from '@/api/chatService';
+import { createConversation, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
 import useUserId from '@/utils/useUserId';
 import MessagesList from './MessagesList';
@@ -78,7 +78,7 @@ const Chat = () => {
     const query = encodeURIComponent(JSON.stringify(input));
     let startConversationId: string;
     if (!conversationId) {
-      const response = await conversationUser();
+      const response = await createConversation();
       startConversationId = response.conversationId;
       triggerUpdate();
       navigate(`/chat/${response.conversationId}`);
