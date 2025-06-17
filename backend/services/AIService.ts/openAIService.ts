@@ -1,9 +1,10 @@
-export const ChatOpenAIResponse = async (
-  client,
-  selectedModel,
-  messages,
-  res,
-) => {
+import OpenAI from 'openai'
+
+const client = new OpenAI({
+  apiKey: process.env.API_TOKEN,
+})
+
+export const getChatOpenAIResponse = async (selectedModel, messages, res) => {
   let fullMessage = ''
   let totalToken = 0
 

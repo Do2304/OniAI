@@ -1,14 +1,10 @@
-import OpenAI from 'openai'
 import { v4 as uuidv4 } from 'uuid'
 import Anthropic from '@anthropic-ai/sdk'
 import * as conversationService from '../services/conversationService'
 import * as messageService from '../services/messageService'
 import * as countTokenService from '../services/countTokenService'
-import { ChatOpenAIResponse } from '../services/AIService.ts/openAIService'
+import { getChatOpenAIResponse } from '../services/AIService.ts/openAIService'
 
-const client = new OpenAI({
-  apiKey: process.env.API_TOKEN,
-})
 const anthropic = new Anthropic({
   apiKey: process.env.CLAUDE_API_KEY,
 })
@@ -52,8 +48,7 @@ export const chatUser = async (req, res) => {
       case 'gpt-4.1-nano':
       case 'gpt-4o':
       case 'o4-mini': {
-        const resultChatOpenAIResponse = await ChatOpenAIResponse(
-          client,
+        const resultChatOpenAIResponse = await getChatOpenAIResponse(
           selectedModels,
           messages,
           res,
