@@ -33,25 +33,35 @@ export const chatUser = async (req, res) => {
 
     let fullMessage = ''
     let totalToken = 0
-    if (selectedModels.startsWith('claude')) {
-      const responseChatGPT = await anthropic.messages.create({
-        model: selectedModels,
-        max_tokens: 1024,
-        messages: [{ role: 'user', content: messages }],
-      })
-      console.log('123', responseChatGPT)
+    switch (selectedModels) {
+      case 'claude-1':
+      case 'claude-2': {
+        const responseChatGPT = await anthropic.messages.create({
+          model: selectedModels,
+          max_tokens: 1024,
+          messages: [{ role: 'user', content: messages }],
+        })
+        console.log('123', responseChatGPT)
 
-      // fullMessage = msg.completion
-      // res.write(`data: ${fullMessage}\n\n`)
-    } else {
-      const reslultChatOpenAIResponse = await ChatOpenAIResponse(
-        client,
-        selectedModels,
-        messages,
-        res,
-      )
-      fullMessage = reslultChatOpenAIResponse.fullMessage
-      totalToken = reslultChatOpenAIResponse.totalToken
+        // fullMessage = msg.completion
+        // res.write(`data: ${fullMessage}\n\n`);
+        break
+      }
+
+      case 'gpt-4.1':
+      case 'gpt-4.1-nano':
+      case 'gpt-4o':
+      case 'o4-mini': {
+        const resultChatOpenAIResponse = await ChatOpenAIResponse(
+          client,
+          selectedModels,
+          messages,
+          res,
+        )
+        fullMessage = resultChatOpenAIResponse.fullMessage
+        totalToken = resultChatOpenAIResponse.totalToken
+        break
+      }
     }
 
     await messageService.createAssistantMessage(conversationId, fullMessage)
