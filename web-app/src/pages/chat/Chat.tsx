@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { createConversation, getHistoryConversation } from '@/api/chatService';
 import { useConversation } from '@/utils/ConversationContext';
 import useUserId from '@/utils/useUserId';
-import MessagesList from './MessagesList';
+import MessagesList from './listMessages/MessagesList';
 import { useQuery } from '@tanstack/react-query';
 import InputArea from './InputArea';
 import { getUsageTotalToken } from '@/api/tokenService';
