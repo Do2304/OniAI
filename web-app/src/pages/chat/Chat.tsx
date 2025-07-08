@@ -95,9 +95,9 @@ const Chat = () => {
     } else {
       startConversationId = conversationId;
     }
-    // const currentMessagesId = uuidv4();
+    const currentMessagesUserId = uuidv4();
     addMessage(startConversationId, {
-      id: '',
+      id: currentMessagesUserId,
       role: 'User',
       content: input,
     });
@@ -138,11 +138,16 @@ const Chat = () => {
   return (
     <>
       <h1 className="text-center text-3xl font-bold w-3/4">CHAT WITH ONI-AI</h1>
-      <div className="w-full sm:w-3/5 mt-10 mx-auto flex flex-col">
-        <MessagesList
-          messages={messages}
-          messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
-        />
+      <div
+        className={`flex flex-col w-full sm:w-3/5 mt-10 mx-auto flex-1
+    ${messages.length === 0 ? 'justify-center' : 'justify-end'}`}
+      >
+        {messages.length > 0 && (
+          <MessagesList
+            messages={messages}
+            messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
+          />
+        )}
         <div className="relative flex w-full items-end px-3 py-3">
           <InputArea
             setSelectedModel={setSelectedModel}
