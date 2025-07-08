@@ -5,7 +5,7 @@ import ButtonCountUseToken from './ButtonCountUseToken';
 
 interface InputActionsProps {
   setSelectedModel: (model: string[]) => void;
-  handleSend: () => Promise<void>;
+  handleSend: () => void;
 }
 
 const InputAction = ({ setSelectedModel, handleSend }: InputActionsProps) => {

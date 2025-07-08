@@ -16,9 +16,9 @@ interface MessageListProps {
 const MessagesList = ({ messages, messagesEndRef }: MessageListProps) => {
   return (
     <div className={`${messages && 'flex-1'}`}>
-      {messages.map((msg, index) => (
+      {messages.map((msg) => (
         <div
-          key={index}
+          key={msg.id}
           className={`mb-2 ${msg.role === 'User' ? 'text-right' : 'text-left'}`}
         >
           {msg.role === 'User' ? (
