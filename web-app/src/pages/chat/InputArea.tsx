@@ -1,27 +1,24 @@
+import { useState } from 'react';
 import InputAction from './inputAction/InputAction';
 import InputChat from './InputChat';
 
 interface InputAreaProps {
-  input: string;
-  setInput: (value: string) => void;
   setSelectedModel: (model: string[]) => void;
-  handleSend: () => Promise<void>;
+  handleSend: (input: string, onClear: () => void) => Promise<void>;
 }
 
-const InputArea = ({
-  input,
-  setInput,
-  setSelectedModel,
-  handleSend,
-}: InputAreaProps) => {
+const InputArea = ({ setSelectedModel, handleSend }: InputAreaProps) => {
+  const [input, setInput] = useState('');
+  const onSubmit = () => {
+    handleSend(input, () => {
+      setInput('');
+    });
+  };
   return (
     <>
-      <InputChat input={input} setInput={setInput} handleSend={handleSend} />
+      <InputChat input={input} setInput={setInput} handleSend={onSubmit} />
       <div style={{ height: '48px' }}></div>
-      <InputAction
-        setSelectedModel={setSelectedModel}
-        handleSend={handleSend}
-      />
+      <InputAction setSelectedModel={setSelectedModel} handleSend={onSubmit} />
     </>
   );
 };

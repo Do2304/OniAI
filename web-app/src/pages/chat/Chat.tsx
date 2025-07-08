@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { processStreamEvent } from '@/services/handleMessage';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,6 +9,7 @@ import MessagesList from './listMessages/MessagesList';
 import { useQuery } from '@tanstack/react-query';
 import InputArea from './InputArea';
 import { getUsageTotalToken } from '@/api/tokenService';
+import { useMessagesStore } from '@/store/useMessagesStore';
 
 interface Message {
   id: string;
@@ -18,14 +19,24 @@ interface Message {
 }
 
 const Chat = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
   const [selectedModel, setSelectedModel] = useState<string[]>(['gpt-4o']);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userInfo = useUserId();
+  const addMessage = useMessagesStore((state) => state.addMessage);
+  const messagesByConversation = useMessagesStore(
+    (state) => state.messagesByConversation,
+  );
+
+  const messages = useMemo(() => {
+    return messagesByConversation.get(conversationId || '') || [];
+  }, [messagesByConversation, conversationId]);
+
+  const addOrUpdateMessage = useMessagesStore(
+    (state) => state.addOrUpdateMessage,
+  );
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -43,7 +54,7 @@ const Chat = () => {
       const res = await getHistoryConversation(conversationId);
       return res.messages;
     },
-    enabled: !!conversationId,
+    enabled: !!conversationId && messages.length <= 0,
   });
 
   const { data, refetch } = useQuery({
@@ -53,17 +64,19 @@ const Chat = () => {
   });
 
   useEffect(() => {
-    setMessages([]);
-    if (fetchedMessages) {
-      setMessages(fetchedMessages);
+    if (fetchedMessages && conversationId && messages.length <= 0) {
+      fetchedMessages.forEach((msg: Message) => {
+        addMessage(conversationId, msg);
+      });
     }
-  }, [fetchedMessages]);
+  }, [fetchedMessages, conversationId, messages.length, addMessage]);
+
   if (isLoading)
     return <div className="text-center">Loading conversation...</div>;
   if (isError)
     return <div className="text-red-500">Error: {error.message}</div>;
 
-  const handleSend = async () => {
+  const handleSend = async (input: string, onClear: () => void) => {
     if (!input) return;
     console.log(data.used);
 
@@ -72,9 +85,6 @@ const Chat = () => {
     //   return;
     // }
 
-    const newMessages: Message = { id: '', role: 'User', content: input };
-    setMessages((prevMessages) => [...prevMessages, newMessages]);
-
     const query = encodeURIComponent(JSON.stringify(input));
     let startConversationId: string;
     if (!conversationId) {
@@ -82,14 +92,29 @@ const Chat = () => {
       startConversationId = response.conversationId;
       triggerUpdate();
       navigate(`/chat/${response.conversationId}`);
+    } else {
+      startConversationId = conversationId;
     }
+    // const currentMessagesId = uuidv4();
+    addMessage(startConversationId, {
+      id: '',
+      role: 'User',
+      content: input,
+    });
 
     selectedModel.forEach((model) => {
       const currentMessagesId = uuidv4();
       const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
       const eventSource = new EventSource(apiChat);
       eventSource.onmessage = (event) =>
-        processStreamEvent(event, setMessages, currentMessagesId, model);
+        processStreamEvent(
+          event,
+          (msg) => {
+            addOrUpdateMessage(startConversationId, msg);
+          },
+          currentMessagesId,
+          model,
+        );
 
       eventSource.addEventListener('end', async () => {
         eventSource.close();
@@ -107,8 +132,7 @@ const Chat = () => {
         eventSource.close();
       };
     });
-
-    setInput('');
+    onClear();
   };
 
   return (
@@ -121,8 +145,6 @@ const Chat = () => {
         />
         <div className="relative flex w-full items-end px-3 py-3">
           <InputArea
-            input={input}
-            setInput={setInput}
             setSelectedModel={setSelectedModel}
             handleSend={handleSend}
           />

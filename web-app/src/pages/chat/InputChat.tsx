@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 interface InputChatProps {
   input: string;
   setInput: (value: string) => void;
-  handleSend: () => Promise<void>;
+  handleSend: () => void;
 }
 
 const InputChat = ({ input, setInput, handleSend }: InputChatProps) => {
