@@ -14,6 +14,8 @@ export const chatUser = async (req, res) => {
   const conversationId = req.query.conversationId
   const userId = req.query.userId
   const selectedModels = req.query.model
+  const isSearchWeb = req.query.isSearchWeb
+  console.log('isSearch', isSearchWeb)
 
   try {
     const conversationExists =

@@ -25,6 +25,7 @@ const Chat = () => {
   const { triggerUpdate } = useConversation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userInfo = useUserId();
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false);
   const addMessage = useMessagesStore((state) => state.addMessage);
   const messagesByConversation = useMessagesStore(
     (state) => state.messagesByConversation,
@@ -104,7 +105,7 @@ const Chat = () => {
 
     selectedModel.forEach((model) => {
       const currentMessagesId = uuidv4();
-      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
+      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}&isSearchWeb=${isSearchEnabled}`;
       const eventSource = new EventSource(apiChat);
       eventSource.onmessage = (event) =>
         processStreamEvent(
@@ -134,6 +135,7 @@ const Chat = () => {
     });
     onClear();
   };
+  console.log('enabled', isSearchEnabled);
 
   return (
     <>
@@ -152,6 +154,9 @@ const Chat = () => {
           <InputArea
             setSelectedModel={setSelectedModel}
             handleSend={handleSend}
+            onSearchToggle={(enabled) => {
+              setIsSearchEnabled(enabled);
+            }}
           />
         </div>
       </div>
