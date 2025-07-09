@@ -1,7 +1,7 @@
 import axios from 'axios'
-// import * as cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 
-export const crawlWebData = async (query) => {
+const crawlWebData = async (query) => {
   console.log('query', query)
   const response = await axios.get(
     'https://www.googleapis.com/customsearch/v1',
@@ -15,26 +15,38 @@ export const crawlWebData = async (query) => {
   )
   const items = response.data.items.slice(0, 5)
   return items
-  //   console.log('items', items)
-  //   let result = []
-  //   for (const item of items) {
-  //     const url = item.link
-  //     const page = await axios.get(url)
-  //     console.log('sd', page.data)
+}
 
-  //     const $ = cheerio.load(page.data)
-  //     // console.log('$', $)
-  //     // const title = $('title').text()
-  //     // console.log('title', title)
+export const handleWebSearch = async (message) => {
+  const crawlResult = await crawlWebData(message)
+  const allContexts = []
+  const allLinks = []
+  const allTitles = []
 
-  //     // const content = $('body').text()
-  //     // console.log('con', content.trim())
-  //     // console.log('-----------------------------------')
+  for (const item of crawlResult) {
+    const url = item.link
+    const title = item.title
+    const page = await axios.get(url)
+    const $ = cheerio.load(page.data)
 
-  //     // result.push(content)
-  //   }
-  //   //   console.log(result)
-  //   //   console.log('-----------------------------------')
+    $(
+      'script, style, noscript, iframe, svg, canvas, meta, link, head, title, object, embed, picture, source, audio, video, track, map, area, base, param, template, menu, menuitem',
+    ).remove()
 
-  //   return result
+    const text = $('body').text()
+    const cleanText = text.replace(/\s+/g, ' ').trim()
+    allContexts.push(cleanText)
+    allLinks.push(url)
+    allTitles.push(title)
+  }
+
+  return (
+    `${message}\n\nHere is the context:\n\n` +
+    allLinks
+      .map(
+        (link, index) =>
+          `link: ${link}\n\n title: ${allTitles[index]}\n\n context: ${allContexts[index].substring(0, 900)}`,
+      )
+      .join('\n\n------------------\n\n')
+  )
 }
