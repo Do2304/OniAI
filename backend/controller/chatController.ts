@@ -4,7 +4,7 @@ import * as conversationService from '../services/conversationService'
 import * as messageService from '../services/messageService'
 import * as countTokenService from '../services/countTokenService'
 import { getChatOpenAIResponse } from '../services/AIService.ts/openAIService'
-import { handleWebSearch } from '../utils/crawl'
+import { handleWebCrawl, handleWebSearch } from '../utils/crawl'
 
 const anthropic = new Anthropic({
   apiKey: process.env.CLAUDE_API_KEY,
@@ -17,6 +17,7 @@ export const chatUser = async (req, res) => {
   const selectedModels = req.query.model
   const isSearchWeb = req.query.isSearchWeb === 'true'
   let messageContent = ''
+  let citations: string[]
 
   try {
     const conversationExists =
@@ -27,9 +28,10 @@ export const chatUser = async (req, res) => {
     await messageService.createUserMessage(conversationId, message)
     if (isSearchWeb) {
       messageContent = await handleWebSearch(message)
+      citations = await handleWebCrawl(message)
     }
 
-    console.log('messageContent', messageContent)
+    // console.log('messageContent', messageContent)
 
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
@@ -60,6 +62,7 @@ export const chatUser = async (req, res) => {
           selectedModels,
           isSearchWeb ? messageContent : message,
           res,
+          citations,
         )
         fullMessage = resultChatOpenAIResponse.fullMessage
         totalToken = resultChatOpenAIResponse.totalToken
@@ -67,7 +70,11 @@ export const chatUser = async (req, res) => {
       }
     }
 
-    await messageService.createAssistantMessage(conversationId, fullMessage)
+    await messageService.createAssistantMessage(
+      conversationId,
+      fullMessage,
+      citations,
+    )
     await countTokenService.countUseToken(userId, totalToken)
 
     res.write(`event: end\n`)

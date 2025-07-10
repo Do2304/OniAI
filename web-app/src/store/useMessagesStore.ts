@@ -1,10 +1,17 @@
 import { create } from 'zustand';
 
+interface Citation {
+  title: string;
+  link: string;
+  context: string;
+}
+
 interface Message {
   id: string;
   role: 'User' | 'assistant';
   content: string;
   model?: string;
+  citations?: Citation[];
 }
 
 interface MessagesState {
@@ -41,6 +48,7 @@ export const useMessagesStore = create<MessagesState>((set, get) => ({
               {
                 ...existing[index],
                 content: existing[index].content + message.content,
+                // citations: message.citations ?? existing[index].citations,
               },
               ...existing.slice(index + 1),
             ];

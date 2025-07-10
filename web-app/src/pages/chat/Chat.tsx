@@ -11,11 +11,17 @@ import InputArea from './InputArea';
 import { getUsageTotalToken } from '@/api/tokenService';
 import { useMessagesStore } from '@/store/useMessagesStore';
 
+interface Citation {
+  title: string;
+  link: string;
+  context: string;
+}
 interface Message {
   id: string;
   role: 'User' | 'assistant';
   content: string;
   model?: string;
+  citations?: Citation[];
 }
 
 const Chat = () => {
@@ -135,7 +141,6 @@ const Chat = () => {
     });
     onClear();
   };
-  console.log('enabled', isSearchEnabled);
 
   return (
     <>

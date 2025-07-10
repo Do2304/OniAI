@@ -2,7 +2,6 @@ import axios from 'axios'
 import * as cheerio from 'cheerio'
 
 const crawlWebData = async (query) => {
-  console.log('query', query)
   const response = await axios.get(
     'https://www.googleapis.com/customsearch/v1',
     {
@@ -49,4 +48,30 @@ export const handleWebSearch = async (message) => {
       )
       .join('\n\n------------------\n\n')
   )
+}
+
+export const handleWebCrawl = async (message) => {
+  const crawlResult = await crawlWebData(message)
+  const citations = []
+
+  for (const item of crawlResult) {
+    const url = item.link
+    const title = item.title
+    const page = await axios.get(url)
+    const $ = cheerio.load(page.data)
+
+    $(
+      'script, style, noscript, iframe, svg, canvas, meta, link, head, title, object, embed, picture, source, audio, video, track, map, area, base, param, template, menu, menuitem',
+    ).remove()
+
+    const text = $('body').text()
+    const cleanText = text.replace(/\s+/g, ' ').trim()
+
+    citations.push({
+      title: title,
+      link: url,
+      context: cleanText,
+    })
+  }
+  return citations
 }

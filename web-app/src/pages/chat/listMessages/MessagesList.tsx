@@ -1,11 +1,18 @@
 import MessageFromUser from './MessageFromUser';
 import MessageFromAssistant from './MessageFromAssistant';
 
+interface Citation {
+  title: string;
+  link: string;
+  context: string;
+}
+
 interface Message {
   id: string;
   role: string;
   content: string;
   model?: string;
+  citations?: Citation[];
 }
 
 interface MessageListProps {
@@ -24,7 +31,11 @@ const MessagesList = ({ messages, messagesEndRef }: MessageListProps) => {
           {msg.role === 'User' ? (
             <MessageFromUser content={msg.content} />
           ) : (
-            <MessageFromAssistant content={msg.content} model={msg.model} />
+            <MessageFromAssistant
+              content={msg.content}
+              model={msg.model}
+              citations={msg.citations}
+            />
           )}
         </div>
       ))}

@@ -4,7 +4,12 @@ const client = new OpenAI({
   apiKey: process.env.API_TOKEN,
 })
 
-export const getChatOpenAIResponse = async (selectedModel, messages, res) => {
+export const getChatOpenAIResponse = async (
+  selectedModel,
+  messages,
+  res,
+  citations,
+) => {
   let fullMessage = ''
   let totalToken = 0
 
@@ -19,7 +24,13 @@ export const getChatOpenAIResponse = async (selectedModel, messages, res) => {
       const message = event.delta
       if (message) {
         fullMessage += message
-        res.write(`data: ${message}\n\n`)
+        // res.write(`data: ${message}\n\n`)
+        res.write(
+          `data: ${JSON.stringify({
+            message,
+            citations,
+          })}\n\n`,
+        )
       }
     }
     if (event.type === 'response.completed') {

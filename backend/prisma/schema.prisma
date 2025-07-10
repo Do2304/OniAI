@@ -39,4 +39,5 @@ model Message {
   content         String
   role            String
   createdAt       DateTime    @default(now())
+  citations       Json?
 }
