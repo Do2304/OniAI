@@ -4,7 +4,11 @@ import * as conversationService from '../services/conversationService'
 import * as messageService from '../services/messageService'
 import * as countTokenService from '../services/countTokenService'
 import { getChatOpenAIResponse } from '../services/AIService.ts/openAIService'
-import { handleWebCrawl, handleWebSearch } from '../utils/crawl'
+import {
+  // handleWebCrawl,
+  // handleWebSearch,
+  handleWebSearchAndCrawl,
+} from '../utils/crawl'
 
 const anthropic = new Anthropic({
   apiKey: process.env.CLAUDE_API_KEY,
@@ -26,9 +30,14 @@ export const chatUser = async (req, res) => {
       await conversationService.createNewConversation(conversationId, userId)
     }
     await messageService.createUserMessage(conversationId, message)
+    // if (isSearchWeb) {
+    //   messageContent = await handleWebSearch(message)
+    //   citations = await handleWebCrawl(message)
+    // }
     if (isSearchWeb) {
-      messageContent = await handleWebSearch(message)
-      citations = await handleWebCrawl(message)
+      const data = await handleWebSearchAndCrawl(message)
+      messageContent = data.messageContent
+      citations = data.citations
     }
 
     // console.log('messageContent', messageContent)
