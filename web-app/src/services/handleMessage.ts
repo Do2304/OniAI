@@ -1,8 +1,15 @@
+interface Citation {
+  title: string;
+  link: string;
+  context: string;
+}
+
 interface Message {
   id: string;
   role: 'User' | 'assistant';
   content: string;
   model?: string;
+  citations?: Citation[];
 }
 
 export const processStreamEvent = (
@@ -11,7 +18,10 @@ export const processStreamEvent = (
   currentMessagesId: string,
   model: string,
 ) => {
-  const messageContent = event.data;
+  const messageData = JSON.parse(event.data);
+  const messageContent = messageData.message;
+  const citations = messageData.citations;
+  console.log('messageContent----', messageContent);
 
   if (!messageContent) return;
 
@@ -20,5 +30,6 @@ export const processStreamEvent = (
     role: 'assistant',
     content: messageContent,
     model,
+    citations,
   });
 };
