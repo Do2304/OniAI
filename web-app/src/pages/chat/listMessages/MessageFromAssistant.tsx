@@ -15,7 +15,7 @@ export default function MessageFromAssistant({
 }) {
   return (
     <div className="text-base ml-3 whitespace-normal border border-none">
-      <div className="block text-black break-words whitespace-pre-wrap">
+      <div className="block break-words whitespace-pre-wrap">
         <MessageContent content={content} />
         {citations && citations.length > 0 && (
           <div className="mt-4 space-y-3 text-sm text-gray-700">
