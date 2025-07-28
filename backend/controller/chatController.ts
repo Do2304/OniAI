@@ -18,7 +18,11 @@ export const chatUser = async (req, res) => {
     const conversationExists =
       await conversationService.findConversation(conversationId)
     if (!conversationExists) {
-      await conversationService.createNewConversation(conversationId, userId)
+      await conversationService.createNewConversation(
+        conversationId,
+        userId,
+        message,
+      )
     }
     await messageService.createUserMessage(conversationId, message)
     // if (isSearchWeb) {

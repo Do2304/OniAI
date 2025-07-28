@@ -15,11 +15,12 @@ export const findConversation = async (conversationId: string) => {
 export const createNewConversation = async (
   conversationId: string,
   userId: string,
+  message: string,
 ) => {
   await prisma.conversation.create({
     data: {
       id: conversationId,
-      title: 'New Chat',
+      title: message.slice(0, 20) + '...' || 'New Chat',
       user: {
         connect: { id: userId },
       },
