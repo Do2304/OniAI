@@ -77,6 +77,9 @@ const SidebarContentLayout = () => {
   const handleRenameConversation = async (id: string, title: string) => {
     setEditingId(id);
     setNewTitle(title);
+    setTimeout(() => {
+      inputRefs.current[id]?.focus();
+    }, 0);
   };
 
   const handleSaveRename = async (id: string) => {
@@ -136,11 +139,14 @@ const SidebarContentLayout = () => {
                   >
                     {editingId === item.id ? (
                       <input
+                        ref={(el) => {
+                          inputRefs.current[item.id] = el;
+                        }}
                         type="text"
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
                         onBlur={() => handleSaveRename(item.id)}
-                        onKeyPress={(e) =>
+                        onKeyDown={(e) =>
                           e.key === 'Enter' && handleSaveRename(item.id)
                         }
                       />

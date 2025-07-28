@@ -7,8 +7,14 @@ import {
   findPartialCodeBlock,
 } from '@llm-ui/code';
 import { markdownLookBack } from '@llm-ui/markdown';
+// import { useEffect } from 'react';
 
 const MessageContent = ({ content }: { content: string }) => {
+  // console.log('content', content);
+  // useEffect(() => {
+  //   console.log('content:-------', content);
+  // }, [content]);
+
   const { blockMatches } = useLLMOutput({
     llmOutput: content,
     fallbackBlock: {
@@ -23,7 +29,7 @@ const MessageContent = ({ content }: { content: string }) => {
         lookBack: codeBlockLookBack(),
       },
     ],
-    isStreamFinished: true,
+    isStreamFinished: false,
   });
 
   return (
@@ -32,6 +38,7 @@ const MessageContent = ({ content }: { content: string }) => {
         const Component = blockMatch.block.component;
         return <Component key={index} blockMatch={blockMatch} />;
       })}
+      {/* {content} */}
     </>
   );
 };

@@ -3,7 +3,9 @@ import remarkGfm from 'remark-gfm';
 import { type LLMOutputComponent } from '@llm-ui/react';
 
 const MarkdownComponent: LLMOutputComponent = ({ blockMatch }) => {
-  const markdown = blockMatch.output;
+  // console.log('blockMatch', blockMatch);
+
+  const markdown = blockMatch.llmOutput;
   return <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>;
 };
 

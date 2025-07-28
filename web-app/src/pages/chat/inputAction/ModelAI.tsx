@@ -46,7 +46,7 @@ const ModelAI = ({ onModelChange }: ModelAIProps) => {
       try {
         const data = await getListModelOpenRouter();
         const allModels = data.models;
-        console.log('allModels', allModels);
+        // console.log('allModels', allModels);
 
         const getTopModelsByPrefix = (
           models: { id: string; name: string }[],

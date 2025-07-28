@@ -21,7 +21,7 @@ export const processStreamEvent = (
   const messageData = JSON.parse(event.data);
   const messageContent = messageData.message;
   const citations = messageData.citations;
-  console.log('messageContent----', messageContent);
+  // console.log('messageContent----', messageContent);
 
   if (!messageContent) return;
 

@@ -1,4 +1,5 @@
 import MessageContent from '@/pages/llm/MessageContent';
+// import { useEffect } from 'react';
 
 export default function MessageFromAssistant({
   content,
@@ -13,6 +14,9 @@ export default function MessageFromAssistant({
     context: string;
   }[];
 }) {
+  // useEffect(() => {
+  //   console.log('Assistant content:', content);
+  // }, [content]);
   return (
     <div className="text-base ml-3 whitespace-normal border border-none">
       <div className="block break-words whitespace-pre-wrap">
