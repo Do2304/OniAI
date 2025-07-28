@@ -9,36 +9,23 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SquarePlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
-
-// enum AIModels {
-//   GPT_4O = 'openai/gpt-4o',
-//   CODEX_MINI = 'openai/codex-mini',
-//   CLAUDE_OPUS = 'anthropic/claude-3-opus-20240229',
-//   CLAUDE_SONNET = 'anthropic/claude-3-sonnet-20240229',
-//   CLAUDE_HAIKU = 'anthropic/claude-3-haiku-20240307',
-//   GEMINI_PRO = 'google/gemini-2.5-pro',
-//   GEMINI_FLASH = 'google/gemini-2.5-flash',
-//   GEMINI_FLASH_LITE = 'google/gemini-2.5-flash-lite-preview-06-17',
-//   DEEPSEEK_R1T2 = 'tngtech/deepseek-r1t2-chimera:free',
-// }
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface ModelAIProps {
   onModelChange: (models: string[]) => void;
 }
 
+const getModelIcon = (modelId: string): string => {
+  if (modelId.startsWith('openai/')) return '/model-icons/openai.png';
+  else if (modelId.startsWith('google/'))
+    return '/model-icons/gemini-color.png';
+  else {
+    return '/model-icons/deepseek-color.png';
+  }
+};
+
 const ModelAI = ({ onModelChange }: ModelAIProps) => {
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
-  // const models = [
-  //   { label: 'GPT-4o', value: AIModels.GPT_4O },
-  //   { label: 'Codex Mini', value: AIModels.CODEX_MINI },
-  //   { label: 'Claude Opus', value: AIModels.CLAUDE_OPUS },
-  //   { label: 'Claude Sonnet', value: AIModels.CLAUDE_SONNET },
-  //   { label: 'Claude Haiku', value: AIModels.CLAUDE_HAIKU },
-  //   { label: 'Gemini 2.5 Pro', value: AIModels.GEMINI_PRO },
-  //   { label: 'Gemini 2.5 Flash', value: AIModels.GEMINI_FLASH },
-  //   { label: 'Gemini 2.5 Flash_lite', value: AIModels.GEMINI_FLASH_LITE },
-  //   { label: 'Deepseek R1T2', value: AIModels.DEEPSEEK_R1T2 },
-  // ];
   const [models, setModels] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
@@ -99,7 +86,19 @@ const ModelAI = ({ onModelChange }: ModelAIProps) => {
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="p-2 ml-1 rounded-full">
             <SquarePlus />
-            <span className="hidden lg:inline">Select Models</span>
+            {/* <span className="hidden lg:inline">Select Models</span> */}
+            <span className="flex items-center ">
+              {selectedModels.length > 0
+                ? selectedModels.map((modelId) => (
+                    <div>
+                      <Avatar className="h-5 w-5 ml-1">
+                        <AvatarImage src={getModelIcon(modelId)} />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </div>
+                  ))
+                : 'Select model'}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" side="top" align="center">
@@ -111,6 +110,11 @@ const ModelAI = ({ onModelChange }: ModelAIProps) => {
                 type="checkbox"
                 checked={selectedModels.includes(model.id)}
                 onChange={() => handleModelChange(model.id)}
+              />
+              <img
+                src={getModelIcon(model.id)}
+                alt="Model Icon"
+                className="w-6 h-6 rounded mr-1 ml-2 object-cover"
               />
               <span className="ml-2">{model.name}</span>
             </label>
