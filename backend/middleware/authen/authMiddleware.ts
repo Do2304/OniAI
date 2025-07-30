@@ -12,7 +12,7 @@ export const authenticateToken = (req, res, next) => {
     if (err) return res.sendStatus(403)
     const userId = decoded.id
     const user = await getUser(userId)
-    console.log(user)
+    // console.log(user)
 
     if (!user) return res.sendStatus(403)
     req.user = user

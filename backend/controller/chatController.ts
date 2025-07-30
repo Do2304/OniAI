@@ -1,27 +1,41 @@
 import { v4 as uuidv4 } from 'uuid'
-import Anthropic from '@anthropic-ai/sdk'
 import * as conversationService from '../services/conversationService'
 import * as messageService from '../services/messageService'
 import * as countTokenService from '../services/countTokenService'
+import { handleWebSearchAndCrawl } from '../utils/crawl'
 import { getChatOpenAIResponse } from '../services/AIService.ts/openAIService'
-
-const anthropic = new Anthropic({
-  apiKey: process.env.CLAUDE_API_KEY,
-})
+import { getChatGoogleGenAIResponse } from '../services/AIService.ts/googleGenAIService'
+import { getChatClaudeResponse } from '../services/AIService.ts/claudeService'
 
 export const chatUser = async (req, res) => {
   const message = JSON.parse(req.query.messages || '[]')
   const conversationId = req.query.conversationId
   const userId = req.query.userId
   const selectedModels = req.query.model
+  const isSearchWeb = req.query.isSearchWeb === 'true'
+  let messageContent = ''
+  let citations: string[]
 
   try {
     const conversationExists =
       await conversationService.findConversation(conversationId)
     if (!conversationExists) {
-      await conversationService.createNewConversation(conversationId, userId)
+      await conversationService.createNewConversation(
+        conversationId,
+        userId,
+        message,
+      )
     }
     await messageService.createUserMessage(conversationId, message)
+    // if (isSearchWeb) {
+    //   messageContent = await handleWebSearch(message)
+    //   citations = await handleWebCrawl(message)
+    // }
+    if (isSearchWeb) {
+      const data = await handleWebSearchAndCrawl(message)
+      messageContent = data.messageContent
+      citations = data.citations
+    }
 
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
@@ -30,17 +44,30 @@ export const chatUser = async (req, res) => {
     let fullMessage = ''
     let totalToken = 0
     switch (selectedModels) {
-      case 'claude-1':
-      case 'claude-2': {
-        const responseChatGPT = await anthropic.messages.create({
-          model: selectedModels,
-          max_tokens: 1024,
-          messages: [{ role: 'user', content: message }],
-        })
-        console.log('123', responseChatGPT)
-
-        // fullMessage = msg.completion
-        // res.write(`data: ${fullMessage}\n\n`);
+      case 'gemini-2.5-pro':
+      case 'gemini-2.5-flash': {
+        const resultChatGoogleGenAI = await getChatGoogleGenAIResponse(
+          selectedModels,
+          isSearchWeb ? messageContent : message,
+          res,
+          citations,
+        )
+        fullMessage = resultChatGoogleGenAI.fullMessage
+        totalToken = resultChatGoogleGenAI.totalToken
+        break
+      }
+      case 'claude-opus-4':
+      case 'claude-sonnet-4':
+      case 'claude-haiku-3.5':
+      case 'claude-sonnet-3.7': {
+        const resultChatClaude = await getChatClaudeResponse(
+          selectedModels,
+          isSearchWeb ? messageContent : message,
+          res,
+          citations,
+        )
+        fullMessage = resultChatClaude.fullMessage
+        totalToken = resultChatClaude.totalToken
         break
       }
 
@@ -50,8 +77,9 @@ export const chatUser = async (req, res) => {
       case 'o4-mini': {
         const resultChatOpenAIResponse = await getChatOpenAIResponse(
           selectedModels,
-          message,
+          isSearchWeb ? messageContent : message,
           res,
+          citations,
         )
         fullMessage = resultChatOpenAIResponse.fullMessage
         totalToken = resultChatOpenAIResponse.totalToken
@@ -59,7 +87,11 @@ export const chatUser = async (req, res) => {
       }
     }
 
-    await messageService.createAssistantMessage(conversationId, fullMessage)
+    await messageService.createAssistantMessage(
+      conversationId,
+      fullMessage,
+      citations,
+    )
     await countTokenService.countUseToken(userId, totalToken)
 
     res.write(`event: end\n`)

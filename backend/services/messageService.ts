@@ -18,11 +18,13 @@ export const createUserMessage = async (
 export const createAssistantMessage = async (
   conversationId: string,
   fullMessage: string,
+  citations: string[],
 ) => {
   await prisma.message.create({
     data: {
       conversationId: conversationId,
       content: fullMessage,
+      citations: citations,
       role: 'Assistant',
     },
   })
@@ -42,6 +44,7 @@ export const getMessagesById = async (
     select: {
       content: true,
       role: true,
+      citations: true,
     },
     orderBy: {
       createdAt: 'asc',

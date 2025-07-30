@@ -5,9 +5,14 @@ import InputChat from './InputChat';
 interface InputAreaProps {
   setSelectedModel: (model: string[]) => void;
   handleSend: (input: string, onClear: () => void) => Promise<void>;
+  onSearchToggle: (enabled: boolean) => void;
 }
 
-const InputArea = ({ setSelectedModel, handleSend }: InputAreaProps) => {
+const InputArea = ({
+  setSelectedModel,
+  handleSend,
+  onSearchToggle,
+}: InputAreaProps) => {
   const [input, setInput] = useState('');
   const onSubmit = () => {
     handleSend(input, () => {
@@ -18,7 +23,11 @@ const InputArea = ({ setSelectedModel, handleSend }: InputAreaProps) => {
     <>
       <InputChat input={input} setInput={setInput} handleSend={onSubmit} />
       <div style={{ height: '48px' }}></div>
-      <InputAction setSelectedModel={setSelectedModel} handleSend={onSubmit} />
+      <InputAction
+        setSelectedModel={setSelectedModel}
+        handleSend={onSubmit}
+        onSearchToggle={onSearchToggle}
+      />
     </>
   );
 };

@@ -11,20 +11,27 @@ import InputArea from './InputArea';
 import { getUsageTotalToken } from '@/api/tokenService';
 import { useMessagesStore } from '@/store/useMessagesStore';
 
+interface Citation {
+  title: string;
+  link: string;
+  context: string;
+}
 interface Message {
   id: string;
   role: 'User' | 'assistant';
   content: string;
   model?: string;
+  citations?: Citation[];
 }
 
 const Chat = () => {
-  const [selectedModel, setSelectedModel] = useState<string[]>(['gpt-4o']);
+  const [selectedModel, setSelectedModel] = useState<string[]>(['gpt-4.1']);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const userInfo = useUserId();
+  const [isSearchEnabled, setIsSearchEnabled] = useState(false);
   const addMessage = useMessagesStore((state) => state.addMessage);
   const messagesByConversation = useMessagesStore(
     (state) => state.messagesByConversation,
@@ -104,7 +111,7 @@ const Chat = () => {
 
     selectedModel.forEach((model) => {
       const currentMessagesId = uuidv4();
-      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}`;
+      const apiChat = `${import.meta.env.VITE_API_BASE_URL}/v1/chat/stream?messages=${query}&conversationId=${conversationId || startConversationId}&userId=${userInfo}&model=${model}&isSearchWeb=${isSearchEnabled}`;
       const eventSource = new EventSource(apiChat);
       eventSource.onmessage = (event) =>
         processStreamEvent(
@@ -152,6 +159,9 @@ const Chat = () => {
           <InputArea
             setSelectedModel={setSelectedModel}
             handleSend={handleSend}
+            onSearchToggle={(enabled) => {
+              setIsSearchEnabled(enabled);
+            }}
           />
         </div>
       </div>
