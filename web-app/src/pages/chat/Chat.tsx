@@ -25,7 +25,7 @@ interface Message {
 }
 
 const Chat = () => {
-  const [selectedModel, setSelectedModel] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string[]>(['gpt-4.1']);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { triggerUpdate } = useConversation();

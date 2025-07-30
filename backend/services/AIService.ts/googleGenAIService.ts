@@ -17,8 +17,8 @@ export const getChatGoogleGenAIResponse = async (
   })
 
   for await (const chunk of responseGoogleAI) {
-    console.log('--------:', chunk)
-    console.log('hiiiii:', chunk.text)
+    // console.log('--------:', chunk)
+    // console.log('hiiiii:', chunk.text)
     const message = chunk.text
     if (message) {
       fullMessage += message

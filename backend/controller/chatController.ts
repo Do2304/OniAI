@@ -3,7 +3,9 @@ import * as conversationService from '../services/conversationService'
 import * as messageService from '../services/messageService'
 import * as countTokenService from '../services/countTokenService'
 import { handleWebSearchAndCrawl } from '../utils/crawl'
-import { getChatOpenRouter } from '../services/AIService.ts/openRouterService'
+import { getChatOpenAIResponse } from '../services/AIService.ts/openAIService'
+import { getChatGoogleGenAIResponse } from '../services/AIService.ts/googleGenAIService'
+import { getChatClaudeResponse } from '../services/AIService.ts/claudeService'
 
 export const chatUser = async (req, res) => {
   const message = JSON.parse(req.query.messages || '[]')
@@ -35,65 +37,55 @@ export const chatUser = async (req, res) => {
       citations = data.citations
     }
 
-    // console.log('messageContent', messageContent)
-
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
 
     let fullMessage = ''
     let totalToken = 0
-    const resultChatOpenRouter = await getChatOpenRouter(
-      selectedModels,
-      isSearchWeb ? messageContent : message,
-      res,
-      citations,
-    )
-    fullMessage = resultChatOpenRouter.fullMessage
-    totalToken = resultChatOpenRouter.totalToken
-    // switch (selectedModels) {
-    //   case 'gemini-2.5-pro':
-    //   case 'gemini-2.5-flash': {
-    //     const resultChatGoogleGenAI = await getChatGoogleGenAIResponse(
-    //       selectedModels,
-    //       isSearchWeb ? messageContent : message,
-    //       res,
-    //       citations,
-    //     )
-    //     fullMessage = resultChatGoogleGenAI.fullMessage
-    //     totalToken = resultChatGoogleGenAI.totalToken
-    //     break
-    //   }
-    //   case 'claude-opus-4':
-    //   case 'claude-sonnet-4':
-    //   case 'claude-2': {
-    //     const responseChatGPT = await anthropic.messages.create({
-    //       model: selectedModels,
-    //       max_tokens: 1024,
-    //       messages: [{ role: 'user', content: message }],
-    //     })
-    //     console.log('123', responseChatGPT)
+    switch (selectedModels) {
+      case 'gemini-2.5-pro':
+      case 'gemini-2.5-flash': {
+        const resultChatGoogleGenAI = await getChatGoogleGenAIResponse(
+          selectedModels,
+          isSearchWeb ? messageContent : message,
+          res,
+          citations,
+        )
+        fullMessage = resultChatGoogleGenAI.fullMessage
+        totalToken = resultChatGoogleGenAI.totalToken
+        break
+      }
+      case 'claude-opus-4':
+      case 'claude-sonnet-4':
+      case 'claude-haiku-3.5':
+      case 'claude-sonnet-3.7': {
+        const resultChatClaude = await getChatClaudeResponse(
+          selectedModels,
+          isSearchWeb ? messageContent : message,
+          res,
+          citations,
+        )
+        fullMessage = resultChatClaude.fullMessage
+        totalToken = resultChatClaude.totalToken
+        break
+      }
 
-    //     // fullMessage = msg.completion
-    //     // res.write(`data: ${fullMessage}\n\n`);
-    //     break
-    //   }
-
-    //   case 'gpt-4.1':
-    //   case 'gpt-4.1-nano':
-    //   case 'gpt-4o':
-    //   case 'o4-mini': {
-    //     const resultChatOpenAIResponse = await getChatOpenAIResponse(
-    //       selectedModels,
-    //       isSearchWeb ? messageContent : message,
-    //       res,
-    //       citations,
-    //     )
-    //     fullMessage = resultChatOpenAIResponse.fullMessage
-    //     totalToken = resultChatOpenAIResponse.totalToken
-    //     break
-    //   }
-    // }
+      case 'gpt-4.1':
+      case 'gpt-4.1-nano':
+      case 'gpt-4o':
+      case 'o4-mini': {
+        const resultChatOpenAIResponse = await getChatOpenAIResponse(
+          selectedModels,
+          isSearchWeb ? messageContent : message,
+          res,
+          citations,
+        )
+        fullMessage = resultChatOpenAIResponse.fullMessage
+        totalToken = resultChatOpenAIResponse.totalToken
+        break
+      }
+    }
 
     await messageService.createAssistantMessage(
       conversationId,

@@ -46,27 +46,19 @@ export const getChatOpenRouter = async (
 
       if (line.startsWith('data: ')) {
         const data = line.slice(6)
-
-        try {
-          const parsed = JSON.parse(data)
-          // console.log('----', parsed)
-          // totalToken = parsed.usage.total_tokens
-          const message = parsed.choices[0].delta.content
-          console.log('message12345', message)
-          if (message) {
-            fullMessage += message
-            // res.write(`data: ${content}\n\n`);
-
-            res.write(
-              `data: ${JSON.stringify({
-                message,
-                citations,
-              })}\n\n`,
-            )
-          }
-        } catch (e) {
-          console.log(e.error)
+        if (data === '[DONE]') {
+          break
         }
+        const parsed = JSON.parse(data)
+        const message = parsed.choices[0].delta.content
+        fullMessage += message
+        // res.write(`data: ${content}\n\n`);
+        res.write(
+          `data: ${JSON.stringify({
+            message,
+            citations,
+          })}\n\n`,
+        )
       }
     }
   }
